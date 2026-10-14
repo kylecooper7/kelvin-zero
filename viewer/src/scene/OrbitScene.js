@@ -925,7 +925,7 @@ export class OrbitScene {
       const lab = sp.userData.label
       if (this.labelFilter && !this.labelFilter(lab.text)) { sp.visible = false; continue }
       if (!helio && lab.helioOnly) { sp.visible = false; continue }
-      if (helio && !helioClose && !lab.helioAlways) { sp.visible = false; continue }
+      if (helio && !helioClose && !lab.helioAlways && !this.labelFilter) { sp.visible = false; continue }
       const { tier, far } = sp.userData.label
       sp.getWorldPosition(tmp)
       const dist = tmp.distanceTo(cam)
@@ -969,9 +969,14 @@ export class OrbitScene {
     if (this.cameraTween) {
       const tw = this.cameraTween
       const k = tw.dur > 0 ? ease(Math.min(1, (now - tw.t0) / tw.dur)) : 1
+      if (this.viewMode === 'helio' && this.helioCamera === 'follow' && this.currentEarthPos) {
+        // the Earth may jump (time change) while the camera is still gliding: carry the glide's end pose with it
+        const E = new THREE.Vector3(this.currentEarthPos.x, this.currentEarthPos.y, 0)
+        const delta = E.clone().sub(this.lastEarthPos)
+        if (delta.lengthSq() > 0) { tw.toPos.add(delta); tw.toTarget.add(delta); tw.fromPos.add(delta); tw.fromTarget.add(delta); this.lastEarthPos.copy(E) }
+      }
       this.camera.position.lerpVectors(tw.fromPos, tw.toPos, k)
       this.controls.target.lerpVectors(tw.fromTarget, tw.toTarget, k)
-      if (this.currentEarthPos) this.lastEarthPos.set(this.currentEarthPos.x, this.currentEarthPos.y, 0)
       if (k >= 1) this.cameraTween = null
     }
     if (!this.cameraTween && this.viewMode === 'helio' && this.helioCamera === 'follow' && this.currentEarthPos) {

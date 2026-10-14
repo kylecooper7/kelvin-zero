@@ -259,14 +259,81 @@ def fig_heatmap(out):
     plt.close(fig)
 
 
+def _lobe_widths(h, centre, thresholds):
+    """Width (degrees of Ω) of the lobe around `centre` in which the yearly eclipse stays below each
+    threshold, by golden-section search for the minimum and bisection for the edges (continuous in Ω)."""
+    f = lambda O: yearly_eclipse_stats(Orbit(h, O), 92).eclipse_fraction  # noqa: E731
+    a, b = centre - 40.0, centre + 40.0
+    g = (5 ** 0.5 - 1) / 2
+    c, d = b - g * (b - a), a + g * (b - a)
+    fc, fd = f(c), f(d)
+    for _ in range(30):
+        if fc < fd:
+            b, d, fd = d, c, fc
+            c = b - g * (b - a)
+            fc = f(c)
+        else:
+            a, c, fc = c, d, fd
+            d = a + g * (b - a)
+            fd = f(d)
+    o_min = (a + b) / 2
+    f_min = f(o_min)
+
+    def edge(thr, sgn):
+        lo, hi = o_min, o_min + sgn * 90.0
+        for _ in range(20):
+            mid = (lo + hi) / 2
+            if f(mid) <= thr:
+                lo = mid
+            else:
+                hi = mid
+        return lo
+
+    widths = [0.0 if f_min > thr else edge(thr, 1) - edge(thr, -1) for thr in thresholds]
+
+    # the eclipse-free width comes from the exact margin min|β| − asin(R/(R+h)) (daily minimum, no sampling noise)
+    days = np.arange(366.0)
+    thr_beta = float(no_eclipse_beta_deg(h))
+    margin = lambda O: float(np.min(np.abs(np.degrees(beta_angle(Orbit(h, O), days))))) - thr_beta  # noqa: E731
+
+    # f is flat (zero) across the island, so start the free-edge bisection from the margin's peak, not from o_min
+    a, b = centre - 40.0, centre + 40.0
+    c, d = b - g * (b - a), a + g * (b - a)
+    mc, md = margin(c), margin(d)
+    for _ in range(25):
+        if mc > md:
+            b, d, md = d, c, mc
+            c = b - g * (b - a)
+            mc = margin(c)
+        else:
+            a, c, mc = c, d, md
+            d = a + g * (b - a)
+            md = margin(d)
+    o_max = (a + b) / 2
+
+    def free_edge(sgn):
+        lo, hi = o_max, o_max + sgn * 90.0
+        for _ in range(20):
+            mid = (lo + hi) / 2
+            if margin(mid) >= 0:
+                lo = mid
+            else:
+                hi = mid
+        return lo
+
+    widths[0] = free_edge(1) - free_edge(-1) if margin(o_max) >= 0 else 0.0
+    return f_min, widths
+
+
 def fig_window(out):
     plt = _style()
-    h = np.arange(400, 2001, 25)
-    O = np.arange(0, 360, 1.0)
+    h = np.arange(400, 2001, 20)
+    thr = (1e-9, 0.01, 0.02, 0.05)
     rows = []
     for x in h:
-        fs = np.array([yearly_eclipse_stats(Orbit(x, o), 92).eclipse_fraction for o in O])
-        rows.append([(fs <= thr).sum() / 2 for thr in (1e-9, 0.01, 0.02, 0.05)])
+        _, dawn = _lobe_widths(x, 270.0, thr)
+        _, dusk = _lobe_widths(x, 90.0, thr)
+        rows.append([(a + b) / 2 for a, b in zip(dawn, dusk)])  # per lobe, averaged over 06:00 and 18:00
     rows = np.array(rows)
     fig, ax = plt.subplots(figsize=(4.8, 2.9))
     for k, (lab, col) in enumerate([("no eclipse at all", C_EMERALD), ("≤ 1% of the year", C_SKY), ("≤ 2%", C_AMBER), ("≤ 5%", C_ROSE)]):
@@ -282,6 +349,28 @@ def fig_window(out):
     plt.close(fig)
 
 
+def fig_surface(out):
+    """The eclipse map as a relief over altitude and node offset (the paper's interactive figure)."""
+    plt = _style()
+    h = np.arange(400, 2001, 25)
+    O = np.arange(0, 361, 3)
+    F = 100 * np.array([[yearly_eclipse_stats(Orbit(x, o), 92).eclipse_fraction for o in O] for x in h])
+    OO, HH = np.meshgrid(O, h)
+    fig = plt.figure(figsize=(7.0, 4.8))
+    ax = fig.add_subplot(111, projection="3d")
+    ax.plot_surface(OO, HH, F, cmap="magma_r", vmin=0, vmax=40, rstride=1, cstride=1, linewidth=0, antialiased=True)
+    ax.contour(OO, HH, F, levels=[0.5, 1, 2, 5, 10, 20, 30], colors="white", linewidths=0.5)
+    ax.set_xlabel("Ω (°)")
+    ax.set_ylabel("altitude h (km)")
+    ax.set_zlabel("yearly eclipse (%)")
+    ax.set_xticks([0, 90, 180, 270, 360])
+    ax.set_zlim(0, 40)
+    ax.view_init(elev=32, azim=-125)
+    ax.set_title("Yearly eclipse as a relief over altitude and node offset")
+    fig.savefig(os.path.join(out, "fig-surface.png"))
+    plt.close(fig)
+
+
 ALL = {
     "analemma": fig_analemma,
     "sso": fig_sso,
@@ -291,6 +380,7 @@ ALL = {
     "regions": fig_regions,
     "heatmap": fig_heatmap,
     "window": fig_window,
+    "surface": fig_surface,
 }
 
 
