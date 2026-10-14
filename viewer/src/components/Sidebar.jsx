@@ -267,7 +267,13 @@ export function Sidebar({ open, model, setModel, timeDays = 0, onRequestDeleteOr
               </label>
               <select
                 id="orbit-preset"
-                className="min-w-0 flex-1 rounded-md bg-white/5 px-2 py-1 text-xs text-white/85 ring-1 ring-inset ring-white/10 focus:outline-none focus:ring-2 focus:ring-sky-400/50"
+                className="min-w-0 flex-1 cursor-pointer appearance-none rounded-md bg-white/10 py-1.5 pl-3 pr-9 text-xs font-medium text-white/90 ring-1 ring-inset ring-white/10 [color-scheme:dark] hover:bg-white/15 focus:outline-none focus:ring-2 focus:ring-sky-400/60"
+                style={{
+                  backgroundImage:
+                    "url(\"data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='12' height='12' viewBox='0 0 24 24' fill='none' stroke='rgba(255,255,255,0.7)' stroke-width='2.5' stroke-linecap='round' stroke-linejoin='round'><path d='m6 9 6 6 6-6'/></svg>\")",
+                  backgroundRepeat: 'no-repeat',
+                  backgroundPosition: 'right 10px center',
+                }}
                 value=""
                 onChange={(e) => {
                   const preset = ORBIT_PRESETS.find((pr) => pr.id === e.target.value)
