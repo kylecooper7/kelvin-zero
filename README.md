@@ -13,15 +13,14 @@ NumPy, a few hundred lines, and organised the way the paper is:
 | `kelvinzero.orbit` | the sun-synchronous condition, J2 nodal precession, 3-D positions, the **β angle**, the cylindrical-shadow **eclipse fraction**, yearly statistics |
 | `kelvinzero.regions` | the always / sometimes / never-eclipsed **region maps** and their ∂U / ∂I contours |
 | `kelvinzero.figures` | the paper's figures (matplotlib) |
-| `kelvinzero.viz` | a self-contained 3-D viewer (plotly) |
+| `kelvinzero.viz` | runs the **visualizer** locally — the same one as the website |
 | `kelvinzero.reference` | reference values for cross-checking other implementations |
 
 ## Install
 
 ```bash
-pip install kelvinzero            # model only (NumPy)
+pip install kelvinzero            # model + the built visualizer (NumPy only)
 pip install "kelvinzero[figures]" # + matplotlib, for the figures
-pip install "kelvinzero[viz]"     # + plotly, for the local 3-D viewer
 ```
 
 or from a checkout: `pip install -e ".[dev]"`.
@@ -41,8 +40,23 @@ print(yearly_eclipse_stats(o))                     # eclipse_fraction≈0.0267, 
 kelvinzero stats --alt 1500 --raan 270      # a fixed plane that is never eclipsed
 kelvinzero sweep --alt 800                  # yearly eclipse versus node offset
 kelvinzero figures out/                     # regenerate the paper's figures
-kelvinzero viz --alt 800 --raan 270 -o viewer.html   # 3-D viewer with a year slider (open in a browser)
+kelvinzero viz --alt 800 --raan 270 --view eclipse    # the visualizer, in your browser, served from your machine
 kelvinzero reference reference.json         # values to test another implementation against
+```
+
+## The visualizer
+
+`kelvinzero viz` serves a built copy of the visualizer from <https://k0webapp.web.app> on a local
+port and opens it — the identical React + Three.js application, minus the website chrome. Its
+source is in [`viewer/`](viewer): the JavaScript model in `viewer/src/model` mirrors this package
+function for function (`sun.js`, `frames.js`, `orbit.js`, `regions.js`), and the 3-D scene is
+`viewer/src/scene/OrbitScene.js`. To work on it:
+
+```bash
+cd viewer && npm install
+npm run dev      # live-reloading dev server
+npm test         # the JS model against this package's reference values (reference.json)
+npm run build    # refreshes the copy shipped in src/kelvinzero/viewer_dist
 ```
 
 ## The model in one paragraph

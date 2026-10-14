@@ -1,0 +1,28 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+/* Page scrollbar blends with the active mode (dark visualizer / light whitepaper). */
+html {
+  scrollbar-width: thin;
+  scrollbar-color: rgba(255, 255, 255, 0.22) transparent;
+}
+html::-webkit-scrollbar { width: 10px; height: 10px; }
+html::-webkit-scrollbar-track { background: transparent; }
+html::-webkit-scrollbar-thumb { background: rgba(255, 255, 255, 0.2); border-radius: 999px; border: 2px solid transparent; background-clip: padding-box; }
+html.wp-light { background: #ffffff; scrollbar-color: rgba(15, 23, 42, 0.22) transparent; }
+html.wp-light::-webkit-scrollbar-thumb { background: rgba(15, 23, 42, 0.2); background-clip: padding-box; border: 2px solid transparent; }
+
+/* Whitepaper: display equations expand to the paper's edges; only scroll when truly wider. */
+.wp-eq { scrollbar-width: thin; scrollbar-color: rgba(15, 23, 42, 0.18) transparent; }
+.wp-eq::-webkit-scrollbar { height: 6px; }
+.wp-eq::-webkit-scrollbar-track { background: transparent; }
+.wp-eq::-webkit-scrollbar-thumb { background: rgba(15, 23, 42, 0.18); border-radius: 999px; }
+.wp-eq .katex-display { margin: 0; }
+.wp-eq .katex-display > .katex { padding: 2px 0 6px; }
+.wp code { background: rgba(15, 23, 42, 0.06); border-radius: 4px; padding: 1px 5px; font-size: 0.9em; }
+.wp .katex { font-size: 1.08em; }
+
+/* Chrome is not copy-able; values and text are. */
+button, [role="radio"], [role="group"], label, select { user-select: none; -webkit-user-select: none; }
+input, textarea { user-select: text; -webkit-user-select: text; }

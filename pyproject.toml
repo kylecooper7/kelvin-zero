@@ -5,7 +5,7 @@ build-backend = "setuptools.build_meta"
 [project]
 name = "kelvinzero"
 version = "0.1.0"
-description = "Eclipse-minimising sun-synchronous orbits in a mean-Sun rotating frame: the model behind the Kelvin Zero paper and visualizer."
+description = "Eclipse-minimising sun-synchronous orbits in a mean-Sun rotating frame: the model and the visualizer behind the Kelvin Zero paper."
 readme = "README.md"
 requires-python = ">=3.10"
 license = { text = "MIT" }
@@ -21,8 +21,7 @@ dependencies = ["numpy>=1.24"]
 
 [project.optional-dependencies]
 figures = ["matplotlib>=3.7", "contourpy>=1.1"]
-viz = ["plotly>=5.18"]
-dev = ["pytest>=7", "matplotlib>=3.7", "contourpy>=1.1", "plotly>=5.18"]
+dev = ["pytest>=7", "matplotlib>=3.7", "contourpy>=1.1"]
 
 [project.urls]
 Homepage = "https://k0webapp.web.app/"
@@ -33,6 +32,9 @@ kelvinzero = "kelvinzero.__main__:main"
 
 [tool.setuptools.packages.find]
 where = ["src"]
+
+[tool.setuptools.package-data]
+kelvinzero = ["viewer_dist/**/*"]
 
 [tool.pytest.ini_options]
 testpaths = ["tests"]

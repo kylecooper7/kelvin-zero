@@ -3,7 +3,7 @@
     python -m kelvinzero stats --alt 800 --raan 270
     python -m kelvinzero sweep --alt 800
     python -m kelvinzero figures out/
-    python -m kelvinzero viz --alt 800 --raan 270 --frame MSSI -o viewer.html
+    python -m kelvinzero viz --alt 800 --raan 270 --view eclipse
     python -m kelvinzero reference reference.json
 """
 
@@ -48,9 +48,9 @@ def cmd_figures(a):
 
 
 def cmd_viz(a):
-    from .viz import write_html
+    from .viz import serve
 
-    print("wrote", write_html(a.out, Orbit(a.alt, a.raan), a.frame))
+    serve(port=a.port, open_browser=not a.no_browser, alt=a.alt, raan=a.raan, view=a.view, day=a.day, cam=a.cam, frame=a.frame)
 
 
 def cmd_reference(a):
@@ -81,11 +81,15 @@ def main(argv=None):
     s.add_argument("out", nargs="?", default="figures")
     s.add_argument("--only", nargs="*")
     s.set_defaults(fn=cmd_figures)
-    s = sub.add_parser("viz", help="write a self-contained 3-D viewer (plotly HTML)")
-    s.add_argument("--alt", type=float, default=800.0)
-    s.add_argument("--raan", type=float, default=270.0)
-    s.add_argument("--frame", choices=["EMI", "MSSI"], default="MSSI")
-    s.add_argument("-o", "--out", default="kelvinzero-viewer.html")
+    s = sub.add_parser("viz", help="run the Kelvin Zero visualizer locally (the same one as k0webapp.web.app)")
+    s.add_argument("--alt", type=float, help="altitude (km)")
+    s.add_argument("--raan", type=float, help="node offset from the mean Sun (deg)")
+    s.add_argument("--view", choices=["overview", "eclipse", "frames", "helio", "sun"], help="preset view to open")
+    s.add_argument("--day", type=float, help="timeline day (0-365.24)")
+    s.add_argument("--cam", help="camera preset: sun, antisun, pole, side, follow, above")
+    s.add_argument("--frame", choices=["EMI", "MSSI"])
+    s.add_argument("--port", type=int, default=0, help="local port (default: a free one)")
+    s.add_argument("--no-browser", action="store_true", help="just serve; do not open a browser")
     s.set_defaults(fn=cmd_viz)
     s = sub.add_parser("reference", help="write reference values (JSON) for cross-checking other implementations")
     s.add_argument("out", nargs="?", default="reference.json")

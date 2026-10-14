@@ -6,6 +6,8 @@ build/
 dist/
 .pytest_cache/
 figures/
-*.html
 reference.json
+!viewer/reference.json
 .DS_Store
+viewer/node_modules/
+viewer/dist/
