@@ -60,6 +60,13 @@ def cmd_reference(a):
 
 
 def main(argv=None):
+    # Windows consoles often default to a legacy code page; make Greek letters and ≥ printable everywhere.
+    for stream in (sys.stdout, sys.stderr):
+        if hasattr(stream, "reconfigure"):
+            try:
+                stream.reconfigure(encoding="utf-8", errors="replace")
+            except (ValueError, OSError):
+                pass
     p = argparse.ArgumentParser(prog="kelvinzero", description=__doc__, formatter_class=argparse.RawDescriptionHelpFormatter)
     sub = p.add_subparsers(dest="cmd", required=True)
     s = sub.add_parser("stats", help="yearly eclipse statistics for one orbit")
