@@ -31,7 +31,7 @@ import { inclinationFromAltitude } from './model/orbit'
 import { roundTo as round } from './utils/number'
 
 export default function App() {
-  const [active, setActive] = useState('visualizer')
+  const [active, setActive] = useState(() => (typeof window !== 'undefined' && window.location.hash.startsWith('#wp-') ? 'whitepaper' : 'visualizer'))
   const [sidebarOpen, setSidebarOpen] = useState(true)
   const [fullscreen, setFullscreen] = useState(false)
   const [timelineDays, setTimelineDays] = useState(0)
@@ -175,6 +175,11 @@ export default function App() {
     return () => { delete window.__k0app }
   })
 
+  useEffect(() => {
+    const h = window.location.hash
+    if (h.startsWith('#wp-')) window.setTimeout(() => document.getElementById(h.slice(1))?.scrollIntoView({ block: 'start' }), 150)
+  }, [])
+
   // Deep links (?view=…&alt=…&raan=…&day=…&cam=…) open the viewer in a given state — used by the PDF.
   const [deepLinkApplied, setDeepLinkApplied] = useState(false)
   useEffect(() => {
@@ -255,6 +260,11 @@ export default function App() {
         onLearnMore={() => {
           const target = helpId ? helpContent[helpId]?.learnMoreUrl : undefined
           closeHelp()
+          if (viewerOnly) {
+            // the local viewer has no whitepaper tab: open the published paper at the right section
+            window.open(`https://k0webapp.web.app/${target && target.startsWith('#') ? target : ''}`, '_blank', 'noopener,noreferrer')
+            return
+          }
           changeTab('whitepaper')
           if (target && target.startsWith('#')) {
             window.setTimeout(() => document.getElementById(target.slice(1))?.scrollIntoView({ behavior: 'smooth', block: 'start' }), 50)
