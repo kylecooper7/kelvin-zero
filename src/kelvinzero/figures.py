@@ -34,6 +34,9 @@ def _style():
     import matplotlib
 
     matplotlib.use("Agg")
+    import logging
+
+    logging.getLogger("matplotlib.font_manager").setLevel(logging.ERROR)  # missing-font fallbacks are fine
     import matplotlib.pyplot as plt
 
     plt.rcParams.update(
