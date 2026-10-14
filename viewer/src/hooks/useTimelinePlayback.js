@@ -21,11 +21,15 @@ export function useTimelinePlayback({ playing, setPlaying, valueDays, setValueDa
 
     let raf = 0
 
+    // durationMs is the time for a FULL year, so the rate (days per second) is the same
+    // wherever playback starts; the remaining span just takes proportionally less time.
+    const start = playStartValueRef.current
+    const spanMs = Math.max(1, (durationMs * (totalDays - start)) / totalDays)
     const tick = (ts) => {
       if (!playStartRef.current) playStartRef.current = ts
       const elapsed = ts - playStartRef.current
-      const t = Math.min(1, elapsed / durationMs)
-      const next = roundTo(playStartValueRef.current + t * (totalDays - playStartValueRef.current), 2)
+      const t = Math.min(1, elapsed / spanMs)
+      const next = roundTo(start + t * (totalDays - start), 2)
       setValueDaysRef.current(next)
 
       if (t >= 1) {
