@@ -51,7 +51,7 @@ export const VIEW_PRESETS = {
     earthTextureMode: 'still',
     orbit: { groundTrack: true },
     vectors: { analemma: true, subSolarPoint: true, sunDirectionLine: true, terminator: true },
-    referenceOverlays: { latLonGrid: true, otherFrameAxes: true },
+    referenceOverlays: { latLonGrid: true, otherFrameAxes: false },
   },
 }
 
