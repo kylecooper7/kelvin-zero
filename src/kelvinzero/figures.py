@@ -240,7 +240,12 @@ def fig_heatmap(out):
     pc = ax.pcolormesh(O, A, F, cmap="magma_r", vmin=0, vmax=40, shading="nearest")
     cs = ax.contour(O, A, F, levels=[0.5, 1, 2, 5, 10, 20, 30], colors="white", linewidths=0.6, alpha=0.9)
     ax.clabel(cs, fmt="%g%%", fontsize=7, colors="white")
-    ax.contour(O, A, F, levels=[0.05], colors=[C_EMERALD], linewidths=1.6)
+    # exact eclipse-free boundary: min_d |beta(d)| = asin(R/(R+h)), on a fine grid so the line is smooth
+    A2 = np.arange(400, 2001, 10)
+    O2 = np.arange(0, 361, 1)
+    dd = np.arange(0, 366)
+    M = np.array([[np.min(np.abs(np.degrees(beta_angle(Orbit(h, o), dd)))) - float(no_eclipse_beta_deg(h)) for o in O2] for h in A2])
+    ax.contour(O2, A2, M, levels=[0.0], colors=[C_EMERALD], linewidths=1.8)
     ax.set_xlabel("RAAN offset from mean Sun, Ω (°)   [LTAN = 12:00 + Ω/15°]")
     ax.set_ylabel("altitude h (km)")
     ax.set_xticks([0, 90, 180, 270, 360])
