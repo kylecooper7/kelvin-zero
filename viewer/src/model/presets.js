@@ -61,7 +61,7 @@ export const ORBIT_PRESETS = [
   { id: 'dawn800', name: 'Dawn–dusk, 800 km (LTAN 06:00)', altitudeKm: 800, raanOffsetDeg: 270 },
   { id: 'dusk800', name: 'Dawn–dusk, 800 km (LTAN 18:00)', altitudeKm: 800, raanOffsetDeg: 90 },
   { id: 'kz1500', name: 'Kelvin Zero, 1500 km (eclipse-free)', altitudeKm: 1500, raanOffsetDeg: 270 },
-  { id: 'default', name: 'Reference, 1000 km', altitudeKm: 1000, raanOffsetDeg: 3 },
+  { id: 'default', name: 'Near dawn–dusk, 800 km (LTAN 05:20)', altitudeKm: 800, raanOffsetDeg: 260 },
 ]
 
 /** Camera positions in scene units (Earth radius = 1); the scene normalises distance. */

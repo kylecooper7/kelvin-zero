@@ -12,9 +12,11 @@ export function createInitialModel() {
     id: 'o1',
     name: 'Orbit 1',
     locked: true,
-    altitudeKm: 1000,
-    inclinationDeg: roundTo(clampNumber(inclinationFromAltitude(1000), I_MIN, I_MAX), 2),
-    raanOffsetDeg: 3,
+    // a near-dawn–dusk plane: 800 km, node 10° short of the 06:00 line (LTAN 05:20), so the
+    // eclipse season around the December solstice is there to find
+    altitudeKm: 800,
+    inclinationDeg: roundTo(clampNumber(inclinationFromAltitude(800), I_MIN, I_MAX), 2),
+    raanOffsetDeg: 260,
     initialMeanAnomalyDeg: 3,
   }
 
