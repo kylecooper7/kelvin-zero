@@ -86,7 +86,7 @@ def build_figure(orbit: Orbit, frame: str = "MSSI", days=None, show_regions: boo
     axis = dict(visible=False, range=[-2.6, 2.6])
     fig.update_layout(
         title=f"Kelvin Zero — {frame} frame · h = {orbit.altitude_km:g} km, i = {orbit.inclination_deg:.2f}°, Ω = {orbit.raan_offset_deg:g}°",
-        scene=dict(xaxis=axis, yaxis=axis, zaxis=axis, aspectmode="cube", bgcolor="#0b1020", camera=dict(eye=dict(x=1.6, y=-0.9, z=0.7), up=dict(x=0, y=0, z=1))),
+        scene=dict(xaxis=axis, yaxis=axis, zaxis=axis, aspectmode="cube", bgcolor="#0b1020", camera=dict(eye=dict(x=1.1, y=-0.65, z=0.5), up=dict(x=0, y=0, z=1))),
         paper_bgcolor="#0b1020",
         font=dict(color="#e2e8f0"),
         legend=dict(x=0.01, y=0.99),
