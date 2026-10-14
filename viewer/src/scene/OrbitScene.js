@@ -61,6 +61,8 @@ const EARTH_SCALE = 0.45
 const SUN_RADIUS_SCENE = 0.5
 
 const BASE = import.meta.env?.BASE_URL ?? '/'
+// textures are served with a long immutable cache; the build id in the URL is what invalidates them
+const TEX_V = typeof __BUILD_ID__ !== 'undefined' ? `?v=${__BUILD_ID__}` : ''
 // Print/paper mode: white ground, dark reference lines and labels, no stars. Enabled with ?paper in the URL.
 export const PAPER = typeof window !== 'undefined' && new URLSearchParams(window.location.search).has('paper')
 
@@ -249,14 +251,14 @@ export class OrbitScene {
     const geo = new THREE.SphereGeometry(1, 128, 96)
     const mat = new THREE.MeshPhongMaterial({ color: 0xffffff, specular: 0x222222, shininess: 8, bumpScale: 0.012 })
     const loader = new THREE.TextureLoader()
-    loader.load(`${BASE}textures/earth-blue-marble.jpg`, (tex) => {
+    loader.load(`${BASE}textures/earth-blue-marble.webp${TEX_V}`, (tex) => {
       tex.colorSpace = THREE.SRGBColorSpace
       tex.anisotropy = this.renderer.capabilities.getMaxAnisotropy()
       mat.map = tex
       mat.needsUpdate = true
       this.texturesReady = true
     })
-    loader.load(`${BASE}textures/earth-topology.png`, (tex) => {
+    loader.load(`${BASE}textures/earth-topology.webp${TEX_V}`, (tex) => {
       mat.bumpMap = tex
       mat.needsUpdate = true
     })
