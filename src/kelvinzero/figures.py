@@ -18,14 +18,12 @@ from .orbit import (
     beta_angle,
     eclipse_fraction_per_orbit,
     no_eclipse_beta_deg,
-    orbit_ring_eci,
     orbital_period,
     sso_inclination_deg,
     yearly_eclipse_stats,
 )
-from .frames import rotate_z, vec_to_lat_lng
 from .regions import classify_regions, compute_sun_dot_extrema, region_contours
-from .sun import analemma_mssi, mean_sun_longitude, sun_state
+from .sun import analemma_mssi, sun_state
 
 C_SKY, C_EMERALD, C_AMBER, C_VIOLET, C_ROSE, C_INK = "#0369a1", "#047857", "#b45309", "#6d28d9", "#be123c", "#0f172a"
 MONTHS = "JFMAMJJASOND"
@@ -221,13 +219,6 @@ def fig_regions(out, altitudes=(550, 1000)):
         for pl in cont["dI"]:
             ax.plot(pl[:, 0], pl[:, 1], color="#c2410c", lw=1.2)
         ax.plot(alng, alat, color=C_SKY, lw=1.0)
-        for O, color, ls in ((0, "#334155", "--"), (270, "#0284c7", "-")):  # the noon–midnight and dawn–dusk orbits, in MSSI
-            ring = orbit_ring_eci(Orbit(h, O), 0.0, 361)
-            ring = rotate_z(ring, -float(mean_sun_longitude(0.0)))
-            lat, lng = vec_to_lat_lng(ring)
-            brk = np.flatnonzero(np.abs(np.diff(lng)) > 180) + 1
-            for seg_lng, seg_lat in zip(np.split(lng, brk), np.split(lat, brk)):
-                ax.plot(seg_lng, seg_lat, color=color, lw=1.3, ls=ls)
         ax.set_xticks(range(-180, 181, 60))
         ax.set_yticks(range(-90, 91, 30))
         ax.set_xlabel("longitude in MSSI (°)  — 0° = mean Sun, ±180° = anti-Sun")
@@ -235,7 +226,7 @@ def fig_regions(out, altitudes=(550, 1000)):
         ax.set_title(f"h = {h} km,  α = {alpha:.1f}°")
         ax.grid(True, alpha=0.5)
     np.atleast_1d(axs)[0].legend(
-        handles=[Patch(color="#c4b5fd", label="always eclipsed"), Patch(color="#fdba74", label="sometimes"), Patch(color="#a7f3d0", label="never"), plt.Line2D([], [], color=C_VIOLET, label="∂U"), plt.Line2D([], [], color="#c2410c", label="∂I"), plt.Line2D([], [], color=C_SKY, label="analemma"), plt.Line2D([], [], color="#334155", ls="--", label="noon–midnight orbit"), plt.Line2D([], [], color="#0284c7", label="dawn–dusk orbit")],
+        handles=[Patch(color="#c4b5fd", label="always eclipsed"), Patch(color="#fdba74", label="sometimes"), Patch(color="#a7f3d0", label="never"), plt.Line2D([], [], color=C_VIOLET, label="∂U"), plt.Line2D([], [], color="#c2410c", label="∂I"), plt.Line2D([], [], color=C_SKY, label="analemma")],
         loc="upper center", bbox_to_anchor=(0.5, -0.32), ncol=6, fontsize=7,
     )
     fig.subplots_adjust(hspace=0.75)
