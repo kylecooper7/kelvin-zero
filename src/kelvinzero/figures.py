@@ -371,6 +371,34 @@ def fig_surface(out):
     plt.close(fig)
 
 
+def fig_hifi(out, hifi_json):
+    """Eclipse minutes per day, closed form against the propagation, for the 800 km dawn–dusk plane
+    and the 1400 km edge (needs the JSON written by ``kelvinzero hifi-table``)."""
+    import json
+
+    plt = _style()
+    H = json.load(open(hifi_json))
+    cases = {(c["orbit"]["altitude_km"], c["orbit"]["raan_offset_deg"]): c for c in H["cases"]}
+    fig, axs = plt.subplots(1, 2, figsize=(7.2, 2.9))
+    for ax, key, title in ((axs[0], (800, 270), "800 km, LTAN 06:00"), (axs[1], (1200, 270), "1200 km, LTAN 06:00")):
+        c = cases[key]
+        cf = c["closed_form"]
+        hf = c.get("hifi_retuned") or c["hifi_paper_inclination"]
+        ax.plot(np.arange(len(cf["daily_eclipse_min"])), cf["daily_eclipse_min"], color=C_SKY, lw=1.8, label="closed form (cylinder, USNO Sun)")
+        ax.plot(np.arange(365), hf["daily_umbra_min"][:365], color=C_ROSE, lw=1.0, label="propagation (J2–J6, Sun+Moon, DE440, umbra)")
+        ax.set_title(title)
+        ax.set_xlabel("day of year")
+        ax.set_xlim(0, 366)
+        ax.set_ylim(bottom=0)
+        ax.grid(True)
+        ax.set_xticks([0, 91, 182, 274, 365])
+        ax.set_xticklabels(["1 Jan", "1 Apr", "1 Jul", "1 Oct", "1 Jan"], fontsize=7)
+    axs[0].set_ylabel("eclipse per day (min)")
+    axs[0].legend(fontsize=6.5, loc="upper center")
+    fig.savefig(os.path.join(out, "fig-hifi.png"))
+    plt.close(fig)
+
+
 ALL = {
     "analemma": fig_analemma,
     "sso": fig_sso,
@@ -384,10 +412,13 @@ ALL = {
 }
 
 
-def make_all(out: str, only=None):
+def make_all(out: str, only=None, hifi_json: str | None = None):
     os.makedirs(out, exist_ok=True)
     for name, fn in ALL.items():
         if only and name not in only:
             continue
         fn(out)
         print("wrote", os.path.join(out, f"fig-{name}.png"))
+    if hifi_json:
+        fig_hifi(out, hifi_json)
+        print("wrote", os.path.join(out, "fig-hifi.png"))

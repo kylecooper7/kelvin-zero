@@ -145,10 +145,13 @@ def test_cylinder_test():
 
 @pytest.mark.parametrize("h,O", [(550, 0), (550, 90), (550, 270), (800, 90), (1000, 3), (1000, 45)])
 def test_closed_form_matches_brute_force(h, O):
+    # the closed form is exact for the cylindrical shadow: with the same days sampled and 3600
+    # points per orbit the brute force agrees to a few 1e-5 of the year (the paper quotes 2e-6
+    # with 7200 points and 3660 days)
     o = Orbit(h, O)
-    sampled = yearly_eclipse_fraction_sampled(o, 183, 180)
+    sampled = yearly_eclipse_fraction_sampled(o, 366, 3600)
     analytic = yearly_eclipse_stats(o, 366).eclipse_fraction
-    assert abs(sampled - analytic) < 0.006
+    assert abs(sampled - analytic) < 5e-5
 
 
 def test_headline_numbers():

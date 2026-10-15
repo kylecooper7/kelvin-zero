@@ -45,7 +45,7 @@ def cmd_sweep(a):
 def cmd_figures(a):
     from .figures import make_all
 
-    make_all(a.out, a.only)
+    make_all(a.out, a.only, hifi_json=a.hifi)
 
 
 def cmd_viz(a):
@@ -74,6 +74,22 @@ def cmd_hifi(a):
         print("wrote", a.json)
 
 
+def cmd_hifi_table(a):
+    """All the paper's comparison cases, sequentially (an hour or so), to one JSON file."""
+    import json
+    import time
+
+    from .hifi import compare, conical_correction, default_cases
+
+    out = {"cases": [], "conical": [conical_correction(h) for h in (400, 550, 800, 1000, 1200, 1500, 2000)]}
+    t0 = time.time()
+    for h, O in default_cases():
+        out["cases"].append(compare(Orbit(h, O)))
+        json.dump(out, open(a.out, "w"))
+        print(f"  {h:g} km, Ω = {O:g}° done ({time.time() - t0:.0f} s)", file=sys.stderr)
+    print("wrote", a.out)
+
+
 def cmd_reference(a):
     from .reference import write_reference
 
@@ -99,6 +115,7 @@ def main(argv=None):
     s.add_argument("--step", type=float, default=10.0)
     s.set_defaults(fn=cmd_sweep)
     s = sub.add_parser("figures", help="regenerate the paper's figures (matplotlib)")
+    s.add_argument("--hifi", help="JSON from `kelvinzero hifi-table`, to also draw the closed-form-vs-propagation figure")
     s.add_argument("out", nargs="?", default="figures")
     s.add_argument("--only", nargs="*")
     s.set_defaults(fn=cmd_figures)
@@ -119,6 +136,9 @@ def main(argv=None):
     s.add_argument("--no-retune", action="store_true", help="keep the J2-only inclination (report the node drift instead of correcting it)")
     s.add_argument("--json", help="also write the full comparison (daily series included) to this file")
     s.set_defaults(fn=cmd_hifi)
+    s = sub.add_parser("hifi-table", help="run every comparison case of the paper's Table 4 and save the results as JSON")
+    s.add_argument("out")
+    s.set_defaults(fn=cmd_hifi_table)
     s = sub.add_parser("reference", help="write reference values (JSON) for cross-checking other implementations")
     s.add_argument("out", nargs="?", default="reference.json")
     s.set_defaults(fn=cmd_reference)
