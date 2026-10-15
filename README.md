@@ -1,5 +1,7 @@
 # Kelvin Zero
 
+[![PyPI](https://img.shields.io/pypi/v/kelvinzero.svg)](https://pypi.org/project/kelvinzero/) [![DOI](https://zenodo.org/badge/DOI/10.5281/zenodo.23382386.svg)](https://doi.org/10.5281/zenodo.23382386) [![tests](https://github.com/kylecooper7/kelvin-zero/actions/workflows/test.yml/badge.svg)](https://github.com/kylecooper7/kelvin-zero/actions/workflows/test.yml)
+
 **Eclipse-minimising sun-synchronous orbits in a mean-Sun rotating frame — the open model.**
 
 This package is the complete, inspectable source of every number, figure and 3-D view in the
@@ -90,7 +92,7 @@ If you use the model or the paper, please cite the release (a `CITATION.cff` is 
 GitHub's "Cite this repository" button gives you BibTeX/APA):
 
 > K. Cooper and Y. Nikas, *Kelvin Zero: eclipse-minimising sun-synchronous orbits in a mean-Sun
-> rotating frame*, v0.1.0 (2026). https://github.com/kylecooper7/kelvin-zero
+> rotating frame*, v0.1.0 (2026). https://doi.org/10.5281/zenodo.23382386
 
 ## License
 
