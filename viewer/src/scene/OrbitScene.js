@@ -258,7 +258,7 @@ export class OrbitScene {
       tex.anisotropy = this.renderer.capabilities.getMaxAnisotropy()
       mat.map = tex
       mat.needsUpdate = true
-      this.texturesReady = true
+      this.texturePending = true // flagged ready only after the first frame has drawn with it (GPU upload done)
     })
     loader.load(`${BASE}textures/earth-topology.webp${TEX_V}`, (tex) => {
       mat.bumpMap = tex
@@ -997,7 +997,17 @@ export class OrbitScene {
     if ((this.frameCount || 0) % 3 === 0) this.#cullLabels()
     this.renderer.render(this.scene, this.camera)
     this.frameCount = (this.frameCount || 0) + 1
+    if (this.texturePending && !this.texturesReady) {
+      this.texturesReady = true
+      this.onReady?.()
+    }
     this.raf = requestAnimationFrame(this.tick)
+  }
+
+  /** Call `cb` once the Earth is textured and drawn (immediately if it already is). */
+  whenReady(cb) {
+    if (this.texturesReady) cb()
+    else this.onReady = cb
   }
 
   /** Take the canvas out of the page and stop rendering, keeping the scene (textures included) alive. */

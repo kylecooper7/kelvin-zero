@@ -1,4 +1,4 @@
-import { useEffect, useRef } from 'react'
+import { useEffect, useRef, useState } from 'react'
 import { OrbitScene } from '../scene/OrbitScene.js'
 
 // The scene is created once and kept across unmounts (tab switches): its WebGL context, textures and
@@ -25,6 +25,8 @@ export function GlobeView({
 }) {
   const containerRef = useRef(null)
   const sceneRef = useRef(null)
+  // nothing is shown until the Earth is textured and drawn — a quiet loader instead of a white sphere
+  const [ready, setReady] = useState(() => !!keptScene?.texturesReady)
 
   useEffect(() => {
     const el = containerRef.current
@@ -34,6 +36,7 @@ export function GlobeView({
     else scene = keptScene = new OrbitScene(el)
     sceneRef.current = scene
     window.__k0scene = scene
+    scene.whenReady(() => setReady(true))
     const ro = new ResizeObserver(() => scene.resize())
     ro.observe(el)
     return () => {
@@ -51,5 +54,15 @@ export function GlobeView({
     if (cameraRequest) sceneRef.current?.setCamera(cameraRequest)
   }, [cameraRequest])
 
-  return <div ref={containerRef} className="h-full w-full" />
+  return (
+    <div className="relative h-full w-full">
+      <div ref={containerRef} className={`h-full w-full transition-opacity duration-500 ${ready ? 'opacity-100' : 'opacity-0'}`} />
+      {!ready ? (
+        <div className="pointer-events-none absolute inset-0 flex flex-col items-center justify-center gap-3 text-white/60">
+          <div className="h-7 w-7 animate-spin rounded-full border-2 border-white/20 border-t-white/70" />
+          <div className="text-[11px] font-semibold uppercase tracking-[0.16em]">Loading Earth</div>
+        </div>
+      ) : null}
+    </div>
+  )
 }
