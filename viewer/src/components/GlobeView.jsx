@@ -1,6 +1,10 @@
 import { useEffect, useRef } from 'react'
 import { OrbitScene } from '../scene/OrbitScene.js'
 
+// The scene is created once and kept across unmounts (tab switches): its WebGL context, textures and
+// camera survive, so coming back to the visualizer is instant and nothing reloads.
+let keptScene = null
+
 const DEFAULT_VECTORS = { analemma: false, subSolarPoint: false, sunDirectionLine: false, terminator: false }
 const DEFAULT_OVERLAYS = { latLonGrid: false, otherFrameAxes: false }
 
@@ -25,15 +29,16 @@ export function GlobeView({
   useEffect(() => {
     const el = containerRef.current
     if (!el) return undefined
-    const scene = new OrbitScene(el)
+    let scene = keptScene
+    if (scene) scene.attach(el)
+    else scene = keptScene = new OrbitScene(el)
     sceneRef.current = scene
-    if (import.meta.env.DEV) window.__k0scene = scene
+    window.__k0scene = scene
     const ro = new ResizeObserver(() => scene.resize())
     ro.observe(el)
     return () => {
       ro.disconnect()
-      if (window.__k0scene === scene) delete window.__k0scene
-      scene.dispose()
+      scene.detach()
       sceneRef.current = null
     }
   }, [])

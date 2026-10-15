@@ -65,6 +65,8 @@ const BASE = import.meta.env?.BASE_URL ?? '/'
 const TEX_V = typeof __BUILD_ID__ !== 'undefined' ? `?v=${__BUILD_ID__}` : ''
 // Print/paper mode: white ground, dark reference lines and labels, no stars. Enabled with ?paper in the URL.
 export const PAPER = typeof window !== 'undefined' && new URLSearchParams(window.location.search).has('paper')
+// Cover-image capture (?cover): the normal dark look with brighter stars and a brighter Earth.
+export const COVER = typeof window !== 'undefined' && new URLSearchParams(window.location.search).has('cover')
 
 let sharedExtrema = null
 function getExtrema() {
@@ -154,11 +156,11 @@ export class OrbitScene {
     this.lastEarthPos = new THREE.Vector3()
 
     // Print mode is lit almost flat so the night side still reads as a map on white paper.
-    this.scene.add(new THREE.AmbientLight(0xffffff, PAPER ? 3.2 : 0.8))
-    this.sunLight = new THREE.DirectionalLight(0xffffff, PAPER ? 1.1 : 2.4)
+    this.scene.add(new THREE.AmbientLight(0xffffff, PAPER ? 3.2 : COVER ? 1.25 : 0.8))
+    this.sunLight = new THREE.DirectionalLight(0xffffff, PAPER ? 1.1 : COVER ? 3.0 : 2.4)
     this.sunLight.position.set(1, 0, 0)
     this.eciGroup.add(this.sunLight)
-    this.scene.add(new THREE.HemisphereLight(0xdfe8ff, 0x2a2f45, PAPER ? 0.8 : 0.35))
+    this.scene.add(new THREE.HemisphereLight(0xdfe8ff, 0x2a2f45, PAPER ? 0.8 : COVER ? 0.6 : 0.35))
 
     if (!PAPER) this.#buildStars()
     this.#buildEarth()
@@ -240,7 +242,7 @@ export class OrbitScene {
     }
     const geo = new THREE.BufferGeometry()
     geo.setAttribute('position', new THREE.BufferAttribute(pos, 3))
-    const mat = new THREE.PointsMaterial({ color: '#cbd5e1', size: 1.6, sizeAttenuation: false, transparent: true, opacity: 0.45, depthWrite: false })
+    const mat = new THREE.PointsMaterial({ color: COVER ? '#e2e8f0' : '#cbd5e1', size: COVER ? 2.4 : 1.6, sizeAttenuation: false, transparent: true, opacity: COVER ? 0.85 : 0.45, depthWrite: false })
     this.stars = new THREE.Points(geo, mat)
     this.eciGroup.add(this.stars)
   }
@@ -884,6 +886,7 @@ export class OrbitScene {
 
   // ---------------------------------------------------------------- lifecycle
   resize() {
+    if (!this.container) return
     const w = Math.max(1, Math.floor(this.container.clientWidth))
     const h = Math.max(1, Math.floor(this.container.clientHeight))
     this.width = w
@@ -995,6 +998,22 @@ export class OrbitScene {
     this.renderer.render(this.scene, this.camera)
     this.frameCount = (this.frameCount || 0) + 1
     this.raf = requestAnimationFrame(this.tick)
+  }
+
+  /** Take the canvas out of the page and stop rendering, keeping the scene (textures included) alive. */
+  detach() {
+    cancelAnimationFrame(this.raf)
+    this.raf = null
+    this.renderer.domElement.remove()
+    this.container = null
+  }
+
+  /** Put the live canvas into a (new) container and resume rendering. */
+  attach(container) {
+    this.container = container
+    container.appendChild(this.renderer.domElement)
+    this.resize()
+    if (this.raf == null) this.raf = requestAnimationFrame(this.tick)
   }
 
   dispose() {
