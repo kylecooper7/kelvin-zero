@@ -55,7 +55,7 @@ const R_REGION = 1.012
 const R_CONTOUR = 1.022
 const SUN_LINE_LENGTH = 2.4
 const TURN_ARC_POINTS = 64
-const TURN_ARC_COLOR = '#2563eb'
+const TURN_ARC_COLOR = '#db2777'
 // Sun-centred view: Earth's orbit semi-major axis in scene units and the Earth assembly scale.
 // Real scale would be 1 AU = 23 455 R_E; here 1 AU = AU_SCENE / EARTH_SCALE ≈ 22 R_E (Earth ≈ 1 000× enlarged).
 const AU_SCENE = 10
@@ -403,9 +403,11 @@ export class OrbitScene {
     // "MSSI turn" arc: a curved arrow around the spin axis from where the MSSI x axis was on day 0 to
     // where it is now — a reading aid for the Sun-centred figures (referenceOverlays.mssiTurnArc)
     this.turnArc = new THREE.Group()
-    this.turnArcLine = this.#polyline(Array.from({ length: TURN_ARC_POINTS }, () => ({ x: 0, y: 0, z: 0 })), { color: TURN_ARC_COLOR, linewidth: 6, opacity: 1 })
-    this.turnArcCone = new THREE.Mesh(new THREE.ConeGeometry(0.12, 0.34, 16), new THREE.MeshBasicMaterial({ color: TURN_ARC_COLOR }))
-    this.turnArc.add(this.turnArcLine, this.turnArcCone)
+    this.turnArcLine = this.#polyline(Array.from({ length: TURN_ARC_POINTS }, () => ({ x: 0, y: 0, z: 0 })), { color: TURN_ARC_COLOR, linewidth: 2.6, opacity: 1 })
+    const coneGeo = new THREE.ConeGeometry(0.028, 0.085, 12)
+    this.turnArcCone = new THREE.Mesh(coneGeo, new THREE.MeshBasicMaterial({ color: TURN_ARC_COLOR }))
+    this.turnArcCone0 = new THREE.Mesh(coneGeo, new THREE.MeshBasicMaterial({ color: TURN_ARC_COLOR }))
+    this.turnArc.add(this.turnArcLine, this.turnArcCone, this.turnArcCone0)
     this.turnArc.visible = false
     this.eciGroup.add(this.turnArc)
     this.displayGroup.add(this.zAxis)
@@ -811,24 +813,32 @@ export class OrbitScene {
     this.framePlanes.visible = planes
   }
 
-  /** Arc from the MSSI x direction on day 0 to its direction on day d, drawn above the north pole in ECI. */
+  /**
+   * Angle marker between the two frames: an arc along the top edges of the xz-planes, from the ECI
+   * plane's +x top corner to the MSSI plane's, the short way round, with a small head at each end.
+   * The angle is the mean-Sun longitude L(d); it closes toward the March equinox.
+   */
   #updateTurnArc(d) {
-    const a0 = frameAngle('MSSI', 0)
-    let a1 = frameAngle('MSSI', d)
-    while (a1 < a0) a1 += Math.PI * 2
-    const start = a0 - 0.22 // a short stub so the arrow reads even on day 0
-    const r = 1.2, z = 2.05 // above the planes and the spin-axis arrow
+    let a1 = frameAngle('MSSI', d) % (Math.PI * 2)
+    if (a1 > Math.PI) a1 -= Math.PI * 2 // short way
+    const r = 1.0, z = 1.03 // the planes' top corners sit at radius S = 1, height S = 1
     const arr = new Float32Array(TURN_ARC_POINTS * 3)
     for (let i = 0; i < TURN_ARC_POINTS; i++) {
-      const a = start + ((a1 - start) * i) / (TURN_ARC_POINTS - 1)
+      const a = (a1 * i) / (TURN_ARC_POINTS - 1)
       arr[3 * i] = r * Math.cos(a)
       arr[3 * i + 1] = r * Math.sin(a)
       arr[3 * i + 2] = z
     }
     this.turnArcLine.geometry.setPositions(arr)
-    const tangent = new THREE.Vector3(-Math.sin(a1), Math.cos(a1), 0)
-    this.turnArcCone.quaternion.setFromUnitVectors(new THREE.Vector3(0, 1, 0), tangent)
-    this.turnArcCone.position.set(r * Math.cos(a1) + tangent.x * 0.15, r * Math.sin(a1) + tangent.y * 0.15, z)
+    const dir = Math.sign(a1) || 1
+    const head = (cone, a, sgn) => {
+      const t = new THREE.Vector3(-Math.sin(a) * sgn, Math.cos(a) * sgn, 0) // tangent, pointing outward from the arc
+      cone.quaternion.setFromUnitVectors(new THREE.Vector3(0, 1, 0), t)
+      // the cone's apex sits half its height ahead of its centre: put the apex exactly on the plane's corner
+      cone.position.set(r * Math.cos(a) - t.x * 0.0425, r * Math.sin(a) - t.y * 0.0425, z)
+    }
+    head(this.turnArcCone, a1, dir)
+    head(this.turnArcCone0, 0, -dir)
   }
 
   #applyTime({ timeDays: d, coordinateFrame, earthTextureMode }) {
@@ -882,7 +892,7 @@ export class OrbitScene {
     }
     // Axes and planes are enlarged in the Sun-centred view so the frames stay legible beside the small Earth.
     const axisScale = helio ? 2.4 : 1
-    for (const g of [this.emiAxis, this.mssiAxis, this.zAxis, this.equatorPlane, this.emiPlanes, this.mssiPlanes]) g.scale.setScalar(axisScale)
+    for (const g of [this.emiAxis, this.mssiAxis, this.zAxis, this.equatorPlane, this.emiPlanes, this.mssiPlanes, this.turnArc]) g.scale.setScalar(axisScale)
     if (this.stars) {
       this.stars.parent?.remove(this.stars)
       ;(helio ? this.scene : this.eciGroup).add(this.stars)

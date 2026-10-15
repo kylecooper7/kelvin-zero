@@ -51,7 +51,13 @@ export function GlobeView({
   }, [coordinateFrame, earthTextureMode, viewMode, orbits, displayOrbits, timeDays, vectors, referenceOverlays])
 
   useEffect(() => {
-    if (cameraRequest) sceneRef.current?.setCamera(cameraRequest)
+    const scene = sceneRef.current
+    // only a *new* request moves the camera: remounting (tab switch) must not re-apply the last one,
+    // so the view the reader left the globe in is still there when they come back
+    if (cameraRequest && scene && scene.lastCameraRequest !== cameraRequest) {
+      scene.lastCameraRequest = cameraRequest
+      scene.setCamera(cameraRequest)
+    }
   }, [cameraRequest])
 
   return (
