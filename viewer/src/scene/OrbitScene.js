@@ -54,6 +54,8 @@ const R_ANALEMMA = 1.014
 const R_REGION = 1.012
 const R_CONTOUR = 1.022
 const SUN_LINE_LENGTH = 2.4
+const TURN_ARC_POINTS = 64
+const TURN_ARC_COLOR = '#2563eb'
 // Sun-centred view: Earth's orbit semi-major axis in scene units and the Earth assembly scale.
 // Real scale would be 1 AU = 23 455 R_E; here 1 AU = AU_SCENE / EARTH_SCALE ≈ 22 R_E (Earth ≈ 1 000× enlarged).
 const AU_SCENE = 10
@@ -398,6 +400,14 @@ export class OrbitScene {
 
     this.zAxis = this.#axisArrow(Z, PAPER ? '#0f172a' : '#e2e8f0', 'z · spin axis', { length: 1.6, tier: 2 })
     this.zAxis.visible = false
+    // "MSSI turn" arc: a curved arrow around the spin axis from where the MSSI x axis was on day 0 to
+    // where it is now — a reading aid for the Sun-centred figures (referenceOverlays.mssiTurnArc)
+    this.turnArc = new THREE.Group()
+    this.turnArcLine = this.#polyline(Array.from({ length: TURN_ARC_POINTS }, () => ({ x: 0, y: 0, z: 0 })), { color: TURN_ARC_COLOR, linewidth: 6, opacity: 1 })
+    this.turnArcCone = new THREE.Mesh(new THREE.ConeGeometry(0.12, 0.34, 16), new THREE.MeshBasicMaterial({ color: TURN_ARC_COLOR }))
+    this.turnArc.add(this.turnArcLine, this.turnArcCone)
+    this.turnArc.visible = false
+    this.eciGroup.add(this.turnArc)
     this.displayGroup.add(this.zAxis)
 
     // spin axis (always on, subtle)
@@ -791,6 +801,7 @@ export class OrbitScene {
     this.mssiAxisSolid.visible = !emiIsDisplay
     this.mssiAxisDashed.visible = emiIsDisplay
     this.zAxis.visible = axes
+    this.turnArc.visible = !!referenceOverlays.mssiTurnArc
     const planes = !!referenceOverlays.framePlanes
     this.equatorPlane.visible = planes
     this.emiPlanes.visible = planes
@@ -798,6 +809,26 @@ export class OrbitScene {
     for (const g of this.emiPlanes.children) { if (g.userData.solid) { g.userData.solid.visible = emiIsDisplay; g.userData.dashed.visible = !emiIsDisplay } }
     for (const g of this.mssiPlanes.children) { if (g.userData.solid) { g.userData.solid.visible = !emiIsDisplay; g.userData.dashed.visible = emiIsDisplay } }
     this.framePlanes.visible = planes
+  }
+
+  /** Arc from the MSSI x direction on day 0 to its direction on day d, drawn above the north pole in ECI. */
+  #updateTurnArc(d) {
+    const a0 = frameAngle('MSSI', 0)
+    let a1 = frameAngle('MSSI', d)
+    while (a1 < a0) a1 += Math.PI * 2
+    const start = a0 - 0.22 // a short stub so the arrow reads even on day 0
+    const r = 1.2, z = 2.05 // above the planes and the spin-axis arrow
+    const arr = new Float32Array(TURN_ARC_POINTS * 3)
+    for (let i = 0; i < TURN_ARC_POINTS; i++) {
+      const a = start + ((a1 - start) * i) / (TURN_ARC_POINTS - 1)
+      arr[3 * i] = r * Math.cos(a)
+      arr[3 * i + 1] = r * Math.sin(a)
+      arr[3 * i + 2] = z
+    }
+    this.turnArcLine.geometry.setPositions(arr)
+    const tangent = new THREE.Vector3(-Math.sin(a1), Math.cos(a1), 0)
+    this.turnArcCone.quaternion.setFromUnitVectors(new THREE.Vector3(0, 1, 0), tangent)
+    this.turnArcCone.position.set(r * Math.cos(a1) + tangent.x * 0.15, r * Math.sin(a1) + tangent.y * 0.15, z)
   }
 
   #applyTime({ timeDays: d, coordinateFrame, earthTextureMode }) {
@@ -823,6 +854,7 @@ export class OrbitScene {
       this.currentEarthPos = { x: e.x * AU_SCENE, y: e.y * AU_SCENE, z: 0 }
     }
     this.sunLine.geometry.setPositions(new Float32Array([0, 0, 0, s.x * sunLen, s.y * sunLen, s.z * sunLen]))
+    if (this.turnArc.visible) this.#updateTurnArc(d)
     this.sunSprite.position.set(s.x * SUN_LINE_LENGTH, s.y * SUN_LINE_LENGTH, s.z * SUN_LINE_LENGTH)
     this.sunSprite.visible = this.sunSprite.visible && !helio
     this.sunSpriteLabel.position.set(s.x * SUN_LINE_LENGTH, s.y * SUN_LINE_LENGTH, s.z * SUN_LINE_LENGTH + 0.22)
