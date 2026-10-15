@@ -5,14 +5,14 @@ type: software
 version: 0.2.0
 date-released: 2026-10-15
 license: MIT
-doi: 10.5281/zenodo.23382387
+doi: 10.5281/zenodo.23384441
 identifiers:
   - type: doi
     value: 10.5281/zenodo.23382386
     description: Concept DOI (resolves to the latest version)
   - type: doi
-    value: 10.5281/zenodo.23382387
-    description: Version DOI for v0.1.0
+    value: 10.5281/zenodo.23384441
+    description: Version DOI for v0.2.0
 repository-code: "https://github.com/kylecooper7/kelvin-zero"
 url: "https://k0webapp.web.app/"
 authors:
