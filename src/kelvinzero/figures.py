@@ -18,12 +18,14 @@ from .orbit import (
     beta_angle,
     eclipse_fraction_per_orbit,
     no_eclipse_beta_deg,
+    orbit_ring_eci,
     orbital_period,
     sso_inclination_deg,
     yearly_eclipse_stats,
 )
+from .frames import rotate_z, vec_to_lat_lng
 from .regions import classify_regions, compute_sun_dot_extrema, region_contours
-from .sun import analemma_mssi, sun_state
+from .sun import analemma_mssi, mean_sun_longitude, sun_state
 
 C_SKY, C_EMERALD, C_AMBER, C_VIOLET, C_ROSE, C_INK = "#0369a1", "#047857", "#b45309", "#6d28d9", "#be123c", "#0f172a"
 MONTHS = "JFMAMJJASOND"
