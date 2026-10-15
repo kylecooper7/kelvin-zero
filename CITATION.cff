@@ -1,0 +1,20 @@
+cff-version: 1.2.0
+message: "If you use this model or the paper, please cite it as below."
+title: "Kelvin Zero: eclipse-minimising sun-synchronous orbits in a mean-Sun rotating frame"
+type: software
+version: 0.1.0
+date-released: 2026-10-14
+license: MIT
+repository-code: "https://github.com/kylecooper7/kelvin-zero"
+url: "https://k0webapp.web.app/"
+authors:
+  - family-names: Cooper
+    given-names: Kyle
+  - family-names: Nikas
+    given-names: Yanni
+keywords:
+  - sun-synchronous orbit
+  - eclipse
+  - analemma
+  - beta angle
+  - astrodynamics

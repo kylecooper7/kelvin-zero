@@ -84,6 +84,14 @@ MSSI, the Sun is west of the mean Sun in November, Ω = 90° ⇒ LTAN 18:00), th
 the β-angle picture, and the headline numbers of the paper. `kelvinzero reference` writes the
 values that the visualizer's JavaScript model is tested against.
 
+## Citing
+
+If you use the model or the paper, please cite the release (a `CITATION.cff` is included, so
+GitHub's "Cite this repository" button gives you BibTeX/APA):
+
+> K. Cooper and Y. Nikas, *Kelvin Zero: eclipse-minimising sun-synchronous orbits in a mean-Sun
+> rotating frame*, v0.1.0 (2026). https://github.com/kylecooper7/kelvin-zero
+
 ## License
 
 MIT.
