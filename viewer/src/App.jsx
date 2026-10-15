@@ -9,6 +9,10 @@ import { GlobeView } from './components/GlobeView'
 import { Icon } from './components/Icon'
 import { TabSwitch } from './components/TabSwitch'
 import { Timeline } from './components/Timeline'
+import { WhitepaperSidebar } from './components/WhitepaperSidebar'
+import { Whitepaper } from './components/Whitepaper'
+import { EclipseSurface } from './components/EclipseSurface'
+import { pdfUrl, prefetchWhitepaperAssets } from './whitepaper/assets.js'
 import { Sidebar } from './components/Sidebar'
 import { helpContent } from './help/helpContent'
 import { useHistoryModel } from './hooks/useHistoryModel'
@@ -31,6 +35,7 @@ import { inclinationFromAltitude } from './model/orbit'
 import { roundTo as round } from './utils/number'
 
 export default function App() {
+  // The site opens on the visualizer; a #wp-… hash (section links from the PDF and elsewhere) opens the whitepaper.
   const [active, setActive] = useState(() => (typeof window !== 'undefined' && window.location.hash.startsWith('#wp-') ? 'whitepaper' : 'visualizer'))
   const [sidebarOpen, setSidebarOpen] = useState(true)
   const [fullscreen, setFullscreen] = useState(false)
@@ -93,7 +98,9 @@ export default function App() {
   }
 
   const whitepaperMode = active === 'whitepaper'
-  const paperCapture = PAPER
+  // ?paper=1 renders the bare scene in print style for the PDF figures; ?cover=1 the same in the dark look, for the cover image
+  const coverCapture = typeof window !== 'undefined' && new URLSearchParams(window.location.search).has('cover')
+  const paperCapture = PAPER || coverCapture
   // Viewer-only build (the open-source package): no Whitepaper tab, no PDF button.
   const viewerOnly = import.meta.env.VITE_VIEWER_ONLY === '1'
   const background = whitepaperMode ? 'bg-white' : 'bg-gradient-to-b from-indigo-950 via-black to-black'
@@ -175,6 +182,13 @@ export default function App() {
     return () => { delete window.__k0app }
   })
 
+  // the paper's figures are small; fetch them quietly once the viewer is up so the whitepaper opens complete
+  useEffect(() => {
+    if (viewerOnly || paperCapture) return undefined
+    const t = window.setTimeout(prefetchWhitepaperAssets, 1500)
+    return () => window.clearTimeout(t)
+  }, [viewerOnly, paperCapture])
+
   useEffect(() => {
     const h = window.location.hash
     if (h.startsWith('#wp-')) window.setTimeout(() => document.getElementById(h.slice(1))?.scrollIntoView({ block: 'start' }), 150)
@@ -216,9 +230,13 @@ export default function App() {
     durationMs: playbackSeconds * 1000,
   })
 
+  if (typeof window !== 'undefined' && new URLSearchParams(window.location.search).has('surface')) {
+    return <div className="inline-block bg-white p-2"><EclipseSurface print /></div>
+  }
+
   if (paperCapture) {
     return (
-      <div className="h-dvh w-full bg-white">
+      <div className={`h-dvh w-full ${coverCapture ? 'bg-gradient-to-b from-[#0b0924] via-[#020108] to-black' : 'bg-white'}`}>
         <GlobeView
           coordinateFrame={activeView.config.toggles.coordinateFrame ?? 'MSSI'}
           earthTextureMode={activeView.config.toggles.earthTextureMode ?? 'realistic'}
@@ -262,7 +280,7 @@ export default function App() {
           closeHelp()
           if (viewerOnly) {
             // the local viewer has no whitepaper tab: open the published paper at the right section
-            window.open(`https://k0webapp.web.app/${target && target.startsWith('#') ? target : ''}`, '_blank', 'noopener,noreferrer')
+            window.open(`https://colure.space/kelvinzero/${target && target.startsWith('#') ? target : ''}`, '_blank', 'noopener,noreferrer')
             return
           }
           changeTab('whitepaper')
@@ -274,7 +292,7 @@ export default function App() {
       />
       {!fullscreen ? (
         whitepaperMode ? (
-          null
+          <WhitepaperSidebar open={sidebarOpen} />
         ) : (
           <Sidebar
             open={sidebarOpen}
@@ -332,7 +350,21 @@ export default function App() {
             <div className="flex items-center gap-2">
               {whitepaperMode ? (
               <a
-                href="/Kelvin-Zero-Whitepaper.pdf"
+                href="https://github.com/kylecooper7/kelvin-zero"
+                target="_blank"
+                rel="noopener noreferrer"
+                className="pointer-events-auto inline-flex h-9 items-center gap-1.5 rounded-full bg-slate-900/[0.06] px-3 text-xs font-semibold text-slate-800 ring-1 ring-inset ring-slate-900/10 hover:bg-slate-900/10"
+                title="The open-source model and visualizer on GitHub"
+              >
+                <svg viewBox="0 0 24 24" className="h-4 w-4" fill="none" stroke="currentColor" strokeWidth="2">
+                  <path strokeLinecap="round" strokeLinejoin="round" d="m8 8-4 4 4 4M16 8l4 4-4 4M14 4l-4 16" />
+                </svg>
+                Code
+              </a>
+              ) : null}
+              {whitepaperMode ? (
+              <a
+                href={pdfUrl()}
                 target="_blank"
                 rel="noopener noreferrer"
                 className={`pointer-events-auto inline-flex h-9 items-center gap-1.5 rounded-full px-3 text-xs font-semibold ring-1 ring-inset ${

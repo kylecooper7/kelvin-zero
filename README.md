@@ -5,7 +5,7 @@
 **Eclipse-minimising sun-synchronous orbits in a mean-Sun rotating frame — the open model.**
 
 This package is the complete, inspectable source of every number, figure and 3-D view in the
-Kelvin Zero whitepaper and the interactive visualizer at <https://k0webapp.web.app>. It is pure
+Kelvin Zero whitepaper and the interactive visualizer at <https://colure.space/kelvinzero/>. It is pure
 NumPy, a few hundred lines, and organised the way the paper is:
 
 | module | what it holds |
@@ -50,7 +50,7 @@ kelvinzero reference reference.json         # values to test another implementat
 
 ## The visualizer
 
-`kelvinzero viz` serves a built copy of the visualizer from <https://k0webapp.web.app> on a local
+`kelvinzero viz` serves a built copy of the visualizer from <https://colure.space/kelvinzero/> on a local
 port and opens it — the identical React + Three.js application, minus the website chrome. Its
 source is in [`viewer/`](viewer): the JavaScript model in `viewer/src/model` mirrors this package
 function for function (`sun.js`, `frames.js`, `orbit.js`, `regions.js`), and the 3-D scene is
@@ -101,7 +101,7 @@ If you use the model or the paper, please cite the release (a `CITATION.cff` is 
 GitHub's "Cite this repository" button gives you BibTeX/APA):
 
 > K. Cooper and Y. Nikas, *Kelvin Zero: eclipse-minimising sun-synchronous orbits in a mean-Sun
-> rotating frame*, v0.2.3 (2026). https://doi.org/10.5281/zenodo.23382386
+> rotating frame*, v0.2.4 (2026). https://doi.org/10.5281/zenodo.23382386
 
 ## License
 

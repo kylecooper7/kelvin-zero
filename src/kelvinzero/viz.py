@@ -3,7 +3,7 @@
     kelvinzero viz                       # opens the viewer in your browser
     kelvinzero viz --alt 800 --raan 270 --view eclipse --day 355 --cam side
 
-This is the very same visualizer as https://k0webapp.web.app — the JavaScript source lives in
+This is the very same visualizer as https://colure.space/kelvinzero/ — the JavaScript source lives in
 ``viewer/`` at the root of the repository (model in ``viewer/src/model``, 3-D scene in
 ``viewer/src/scene``) and a built copy is shipped inside this package. The command starts a
 small local HTTP server for that static build and opens it; nothing is sent anywhere.

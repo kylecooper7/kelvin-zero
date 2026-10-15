@@ -119,7 +119,7 @@ def main(argv=None):
     s.add_argument("out", nargs="?", default="figures")
     s.add_argument("--only", nargs="*")
     s.set_defaults(fn=cmd_figures)
-    s = sub.add_parser("viz", help="run the Kelvin Zero visualizer locally (the same one as k0webapp.web.app)")
+    s = sub.add_parser("viz", help="run the Kelvin Zero visualizer locally (the same one as colure.space/kelvinzero)")
     s.add_argument("--alt", type=float, help="altitude (km)")
     s.add_argument("--raan", type=float, help="node offset from the mean Sun (deg)")
     s.add_argument("--view", choices=["overview", "eclipse", "frames", "helio", "sun"], help="preset view to open")

@@ -1,6 +1,6 @@
 """Kelvin Zero — eclipse-minimising sun-synchronous orbits in a mean-Sun rotating frame.
 
-The model behind the paper and the visualizer at https://k0webapp.web.app. Everything is pure
+The model behind the paper and the visualizer at https://colure.space/kelvinzero. Everything is pure
 NumPy; figures need matplotlib, the local 3-D viewer needs plotly (``pip install kelvinzero[viz]``).
 
 Quick start::

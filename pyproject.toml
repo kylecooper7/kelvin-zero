@@ -4,7 +4,7 @@ build-backend = "setuptools.build_meta"
 
 [project]
 name = "kelvinzero"
-version = "0.2.3"
+version = "0.2.4"
 description = "Eclipse-minimising sun-synchronous orbits in a mean-Sun rotating frame: the model and the visualizer behind the Kelvin Zero paper."
 readme = "README.md"
 requires-python = ">=3.10"
@@ -31,8 +31,8 @@ hifi = ["scipy>=1.10", "jplephem>=2.20"]
 dev = ["pytest>=7", "matplotlib>=3.7", "contourpy>=1.1", "scipy>=1.10", "jplephem>=2.20"]
 
 [project.urls]
-Homepage = "https://k0webapp.web.app/"
-Paper = "https://k0webapp.web.app/Kelvin-Zero-Whitepaper.pdf"
+Homepage = "https://colure.space/kelvinzero/"
+Paper = "https://colure.space/kelvinzero/Kelvin-Zero-Whitepaper.pdf"
 Source = "https://github.com/kylecooper7/kelvin-zero"
 Issues = "https://github.com/kylecooper7/kelvin-zero/issues"
 
