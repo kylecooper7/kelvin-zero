@@ -341,7 +341,7 @@ def fig_window(out):
     ax.set_xlabel("altitude h (km)")
     ax.set_ylabel("width of the Ω window (°)")
     ax.set_xlim(400, 2000)
-    ax.set_ylim(0, 60)
+    ax.set_ylim(0, 70)
     ax.grid(True)
     ax.legend(title="yearly eclipse", fontsize=7, title_fontsize=7)
     ax.set_title("How far the node may sit from dawn–dusk")

@@ -23,7 +23,7 @@ export const helpContent = {
   raanOffsetDeg: {
     title: 'RAAN offset from the mean Sun (Ω)',
     body:
-      'Right ascension of the ascending node measured in the MSSI frame, i.e. from the mean-Sun direction. Ω = 0° puts the ascending node at local noon (noon–midnight orbit, maximum eclipse); Ω = 90° or 270° gives a dawn–dusk orbit (LTAN 18:00 / 06:00, minimum eclipse). For an exact SSO this angle is constant all year.',
+      'Right ascension of the ascending node measured in the MSSI frame, i.e. from the mean-Sun direction. Ω = 0° puts the ascending node at local noon (noon–midnight orbit, maximum eclipse); Ω = 90° or 270° gives a dawn–dusk orbit (LTAN 18:00 / 06:00, minimum eclipse). For an exact SSO this angle is constant all year; the label shows the LTAN it corresponds to.',
     learnMoreLabel: 'Whitepaper',
     learnMoreUrl: '#wp-sso',
   },
@@ -68,7 +68,7 @@ export const helpContent = {
   },
   orbitalPlaneRing: {
     title: 'Orbital plane ring',
-    body: 'The full circular orbit drawn in 3-D at radius R + h — the “SSO plane ring” of the notebooks. Frozen in MSSI, precessing in ECI.',
+    body: 'The full circular orbit drawn in 3-D at radius R + h. Frozen in MSSI, precessing once a year in ECI.',
     learnMoreLabel: 'Whitepaper',
     learnMoreUrl: '#wp-sso',
   },
@@ -87,7 +87,7 @@ export const helpContent = {
   eclipseRegions: {
     title: 'Eclipse-time regions',
     body:
-      'Classifies every direction on the sphere (in MSSI) by whether a point of this orbit’s shell in that direction is sunlit at some/all/no time of year: purple = always eclipsed, orange = sometimes, green = never. The cone half-angle α = 90° + acos(R/(R+h)) depends on altitude. ∂U (purple line) bounds the ever-sunlit set, ∂I (orange line) bounds the always-sunlit set. An orbit is eclipse-free all year iff its ring stays inside the green region.',
+      'Colours every direction on the sphere (in MSSI) by what a point of this orbit’s shell in that direction sees over the year: green = sunlit all year, orange = sunlit for part of the year and in shadow for the rest, purple = in shadow all year. The cone half-angle α = 90° + acos(R/(R+h)) depends on altitude; ∂U (purple line) bounds the purple cap, ∂I (orange line) bounds the orange band. Read it for the orbit ring: entirely in green → never eclipsed at any time of year; passes through orange but not purple → an eclipse season (eclipse-free part of the year, an eclipse on every revolution the rest); crosses purple → an eclipse on every revolution all year.',
     learnMoreLabel: 'Whitepaper',
     learnMoreUrl: '#wp-regions',
   },
