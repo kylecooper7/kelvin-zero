@@ -219,6 +219,13 @@ def fig_regions(out, altitudes=(550, 1000)):
         for pl in cont["dI"]:
             ax.plot(pl[:, 0], pl[:, 1], color="#c2410c", lw=1.2)
         ax.plot(alng, alat, color=C_SKY, lw=1.0)
+        for O, color, ls in ((0, "#334155", "--"), (270, "#0284c7", "-")):  # the noon–midnight and dawn–dusk orbits, in MSSI
+            ring = orbit_ring_eci(Orbit(h, O), 0.0, 361)
+            ring = rotate_z(ring, -float(mean_sun_longitude(0.0)))
+            lat, lng = vec_to_lat_lng(ring)
+            brk = np.flatnonzero(np.abs(np.diff(lng)) > 180) + 1
+            for seg_lng, seg_lat in zip(np.split(lng, brk), np.split(lat, brk)):
+                ax.plot(seg_lng, seg_lat, color=color, lw=1.3, ls=ls)
         ax.set_xticks(range(-180, 181, 60))
         ax.set_yticks(range(-90, 91, 30))
         ax.set_xlabel("longitude in MSSI (°)  — 0° = mean Sun, ±180° = anti-Sun")
@@ -226,7 +233,7 @@ def fig_regions(out, altitudes=(550, 1000)):
         ax.set_title(f"h = {h} km,  α = {alpha:.1f}°")
         ax.grid(True, alpha=0.5)
     np.atleast_1d(axs)[0].legend(
-        handles=[Patch(color="#c4b5fd", label="always eclipsed"), Patch(color="#fdba74", label="sometimes"), Patch(color="#a7f3d0", label="never"), plt.Line2D([], [], color=C_VIOLET, label="∂U"), plt.Line2D([], [], color="#c2410c", label="∂I"), plt.Line2D([], [], color=C_SKY, label="analemma")],
+        handles=[Patch(color="#c4b5fd", label="always eclipsed"), Patch(color="#fdba74", label="sometimes"), Patch(color="#a7f3d0", label="never"), plt.Line2D([], [], color=C_VIOLET, label="∂U"), plt.Line2D([], [], color="#c2410c", label="∂I"), plt.Line2D([], [], color=C_SKY, label="analemma"), plt.Line2D([], [], color="#334155", ls="--", label="noon–midnight orbit"), plt.Line2D([], [], color="#0284c7", label="dawn–dusk orbit")],
         loc="upper center", bbox_to_anchor=(0.5, -0.32), ncol=6, fontsize=7,
     )
     fig.subplots_adjust(hspace=0.75)
@@ -384,17 +391,21 @@ def fig_hifi(out, hifi_json):
         c = cases[key]
         cf = c["closed_form"]
         hf = c.get("hifi_retuned") or c["hifi_paper_inclination"]
-        ax.plot(np.arange(len(cf["daily_eclipse_min"])), cf["daily_eclipse_min"], color=C_SKY, lw=1.8, label="closed form (cylinder, USNO Sun)")
-        ax.plot(np.arange(365), hf["daily_umbra_min"][:365], color=C_ROSE, lw=1.0, label="propagation (J2–J6, Sun+Moon, DE440, umbra)")
+        # start the axis on 1 July so the December season sits whole in the middle instead of split at the year end
+        roll = lambda v: np.roll(np.asarray(v[:365]), -182)  # noqa: E731
+        ax.plot(np.arange(365), roll(cf["daily_eclipse_min"]), color=C_SKY, lw=1.8, label="closed form (cylinder, USNO Sun)")
+        ax.plot(np.arange(365), roll(hf["daily_umbra_min"]), color=C_ROSE, lw=1.0, label="propagation (J2–J6, Sun+Moon, DE440, umbra)")
         ax.set_title(title)
         ax.set_xlabel("day of year")
         ax.set_xlim(0, 366)
         ax.set_ylim(bottom=0)
         ax.grid(True)
-        ax.set_xticks([0, 91, 182, 274, 365])
-        ax.set_xticklabels(["1 Jan", "1 Apr", "1 Jul", "1 Oct", "1 Jan"], fontsize=7)
+        ax.set_xticks([0, 92, 184, 273, 365])
+        ax.set_xticklabels(["1 Jul", "1 Oct", "1 Jan", "1 Apr", "1 Jul"], fontsize=7)
     axs[0].set_ylabel("eclipse per day (min)")
-    axs[0].legend(fontsize=6.5, loc="upper center")
+    h, l = axs[0].get_legend_handles_labels()
+    fig.legend(h, l, fontsize=7, loc="lower center", ncol=2, frameon=False, bbox_to_anchor=(0.5, -0.02))
+    fig.subplots_adjust(bottom=0.3)
     fig.savefig(os.path.join(out, "fig-hifi.png"))
     plt.close(fig)
 

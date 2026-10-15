@@ -101,7 +101,7 @@ If you use the model or the paper, please cite the release (a `CITATION.cff` is 
 GitHub's "Cite this repository" button gives you BibTeX/APA):
 
 > K. Cooper and Y. Nikas, *Kelvin Zero: eclipse-minimising sun-synchronous orbits in a mean-Sun
-> rotating frame*, v0.2.1 (2026). https://doi.org/10.5281/zenodo.23382386
+> rotating frame*, v0.2.2 (2026). https://doi.org/10.5281/zenodo.23382386
 
 ## License
 

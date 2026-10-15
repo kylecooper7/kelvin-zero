@@ -45,6 +45,14 @@ export const VIEW_PRESETS = {
     vectors: { analemma: false, subSolarPoint: true, sunDirectionLine: true, terminator: false },
     referenceOverlays: { latLonGrid: true, otherFrameAxes: true, framePlanes: true },
   },
+  planes: {
+    name: 'Frame planes',
+    coordinateFrame: 'MSSI',
+    earthTextureMode: 'still',
+    orbit: { orbitalPlaneRing: true, satelliteMarker: true },
+    vectors: { sunDirectionLine: true },
+    referenceOverlays: { latLonGrid: false, otherFrameAxes: true, framePlanes: true },
+  },
   sun: {
     name: 'Sun & analemma',
     coordinateFrame: 'MSSI',
