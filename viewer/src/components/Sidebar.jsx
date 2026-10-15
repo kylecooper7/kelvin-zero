@@ -1,4 +1,4 @@
-import { useMemo, useState } from 'react'
+import { useEffect, useMemo, useRef, useState } from 'react'
 import { clampNumber, roundTo } from '../utils/number'
 import { DEG } from '../model/constants.js'
 import {
@@ -45,6 +45,49 @@ function ColorSquareToggle({ checked, colorClass }) {
 
 const SECTION_LABEL = 'text-[11px] font-semibold uppercase tracking-[0.16em] text-white/55'
 const GROUP_LABEL = 'text-[10px] font-semibold uppercase tracking-[0.14em] text-white/45'
+
+/** Orbit-preset picker: a button that opens a rounded dark list, in the sidebar's own style. */
+function PresetMenu({ onPick }) {
+  const [open, setOpen] = useState(false)
+  const ref = useRef(null)
+  useEffect(() => {
+    if (!open) return undefined
+    const close = (e) => { if (!ref.current?.contains(e.target)) setOpen(false) }
+    const key = (e) => { if (e.key === 'Escape') setOpen(false) }
+    document.addEventListener('mousedown', close)
+    document.addEventListener('keydown', key)
+    return () => { document.removeEventListener('mousedown', close); document.removeEventListener('keydown', key) }
+  }, [open])
+  return (
+    <div ref={ref} className="relative min-w-0 flex-1">
+      <button
+        type="button"
+        aria-haspopup="listbox"
+        aria-expanded={open}
+        onClick={() => setOpen((v) => !v)}
+        className="flex w-full items-center justify-between rounded-md bg-white/10 py-1.5 pl-3 pr-2.5 text-xs font-medium text-white/90 ring-1 ring-inset ring-white/10 hover:bg-white/15 focus:outline-none focus-visible:ring-2 focus-visible:ring-sky-400/60"
+      >
+        <span>Load an orbit preset…</span>
+        <Chevron className={`h-3 w-3 text-white/70 transition-transform ${open ? 'rotate-180' : ''}`} />
+      </button>
+      {open ? (
+        <ul role="listbox" className="absolute left-0 right-0 top-full z-40 mt-1.5 overflow-hidden rounded-xl bg-slate-950/95 p-1 shadow-xl ring-1 ring-white/10 backdrop-blur-md">
+          {ORBIT_PRESETS.map((pr) => (
+            <li key={pr.id} role="option" aria-selected={false}>
+              <button
+                type="button"
+                onClick={() => { onPick(pr); setOpen(false) }}
+                className="w-full rounded-lg px-3 py-1.5 text-left text-xs font-medium text-white/85 hover:bg-white/10 hover:text-white focus:outline-none focus-visible:bg-white/10"
+              >
+                {pr.name}
+              </button>
+            </li>
+          ))}
+        </ul>
+      ) : null}
+    </div>
+  )
+}
 
 function Legend({ items }) {
   return (
@@ -267,22 +310,9 @@ export function Sidebar({ open, model, setModel, timeDays = 0, onRequestDeleteOr
             </div>
 
             <div className="mt-2 flex items-center gap-2">
-              <label className={`${GROUP_LABEL} flex-none`} htmlFor="orbit-preset">
-                Preset
-              </label>
-              <select
-                id="orbit-preset"
-                className="min-w-0 flex-1 cursor-pointer appearance-none rounded-md bg-white/10 py-1.5 pl-3 pr-9 text-xs font-medium text-white/90 ring-1 ring-inset ring-white/10 [color-scheme:dark] hover:bg-white/15 focus:outline-none focus:ring-2 focus:ring-sky-400/60"
-                style={{
-                  backgroundImage:
-                    "url(\"data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='12' height='12' viewBox='0 0 24 24' fill='none' stroke='rgba(255,255,255,0.7)' stroke-width='2.5' stroke-linecap='round' stroke-linejoin='round'><path d='m6 9 6 6 6-6'/></svg>\")",
-                  backgroundRepeat: 'no-repeat',
-                  backgroundPosition: 'right 10px center',
-                }}
-                value=""
-                onChange={(e) => {
-                  const preset = ORBIT_PRESETS.find((pr) => pr.id === e.target.value)
-                  if (!preset) return
+              <span className={`${GROUP_LABEL} flex-none`}>Preset</span>
+              <PresetMenu
+                onPick={(preset) => {
                   const alt = roundTo(clampNumber(preset.altitudeKm, 100, 2000), 1)
                   setOrbitParams(activeOrbit.id, {
                     altitudeKm: alt,
@@ -290,14 +320,7 @@ export function Sidebar({ open, model, setModel, timeDays = 0, onRequestDeleteOr
                     raanOffsetDeg: preset.raanOffsetDeg,
                   })
                 }}
-              >
-                <option value="">Load an orbit preset…</option>
-                {ORBIT_PRESETS.map((pr) => (
-                  <option key={pr.id} value={pr.id}>
-                    {pr.name}
-                  </option>
-                ))}
-              </select>
+              />
             </div>
 
             <div className="mt-6 space-y-6">
