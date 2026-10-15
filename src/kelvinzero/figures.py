@@ -339,7 +339,7 @@ def fig_window(out):
     for k, (lab, col) in enumerate([("no eclipse at all", C_EMERALD), ("≤ 1% of the year", C_SKY), ("≤ 2%", C_AMBER), ("≤ 5%", C_ROSE)]):
         ax.plot(h, rows[:, k], color=col, lw=1.6, label=lab)
     ax.set_xlabel("altitude h (km)")
-    ax.set_ylabel("Ω window per dawn/dusk lobe (°)")
+    ax.set_ylabel("width of the Ω window (°)")
     ax.set_xlim(400, 2000)
     ax.set_ylim(0, 60)
     ax.grid(True)

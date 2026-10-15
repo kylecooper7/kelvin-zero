@@ -17,6 +17,7 @@ NumPy, a few hundred lines, and organised the way the paper is:
 | `kelvinzero.figures` | the paper's figures (matplotlib) |
 | `kelvinzero.viz` | runs the **visualizer** locally — the same one as the website |
 | `kelvinzero.reference` | reference values for cross-checking other implementations |
+| `kelvinzero.hifi` | the **high-fidelity cross-check**: numerical propagation with J2–J6, Sun and Moon from JPL DE440 and a conical umbra/penumbra (`pip install "kelvinzero[hifi]"`) |
 
 ## Install
 
@@ -43,6 +44,7 @@ kelvinzero stats --alt 1500 --raan 270      # a fixed plane that is never eclips
 kelvinzero sweep --alt 800                  # yearly eclipse versus node offset
 kelvinzero figures out/                     # regenerate the paper's figures
 kelvinzero viz --alt 800 --raan 270 --view eclipse    # the visualizer, in your browser, served from your machine
+kelvinzero hifi --alt 800 --raan 270        # closed form vs a full-force-model propagation (needs the [hifi] extra; downloads DE440s once)
 kelvinzero reference reference.json         # values to test another implementation against
 ```
 
@@ -79,6 +81,13 @@ mean Sun (Ω = 0 → LTAN 12:00, 90 → 18:00, 270 → 06:00); EMI has x toward 
 along the spin axis.
 
 ## Verification
+
+`kelvinzero hifi` propagates an orbit through a year with the EGM96 zonal field J2–J6, the Sun and
+Moon as point masses from the JPL DE440s ephemeris (33 MB, fetched once into `~/.cache/kelvinzero`),
+DOP853 integration and a conical umbra/penumbra, and prints the eclipse hours, days with eclipse and
+the longest pass next to the closed form — plus the node drift the J2-only inclination leaves and the
+inclination that cancels it. The paper's verification table is `kelvinzero hifi` for nine cases.
+
 
 `pytest` checks the closed-form eclipse fraction against brute-force cylindrical-shadow sweeps,
 the USNO ephemeris against the NOAA/Spencer series, frame conventions (an exact SSO is frozen in

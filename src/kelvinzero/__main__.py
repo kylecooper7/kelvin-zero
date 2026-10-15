@@ -4,6 +4,7 @@
     python -m kelvinzero sweep --alt 800
     python -m kelvinzero figures out/
     python -m kelvinzero viz --alt 800 --raan 270 --view eclipse
+    python -m kelvinzero hifi --alt 800 --raan 270
     python -m kelvinzero reference reference.json
 """
 
@@ -53,6 +54,26 @@ def cmd_viz(a):
     serve(port=a.port, open_browser=not a.no_browser, alt=a.alt, raan=a.raan, view=a.view, day=a.day, cam=a.cam, frame=a.frame)
 
 
+def cmd_hifi(a):
+    from .hifi import compare
+
+    r = compare(Orbit(a.alt, a.raan), retune=not a.no_retune, days=a.days)
+    cf, hp = r["closed_form"], r["hifi_paper_inclination"]
+    print(f"{a.alt:g} km, Ω = {a.raan:g}° (LTAN {ltan_hours(a.raan):05.2f})")
+    print(f"  closed form        : {cf['eclipse_hours']:8.1f} h/yr  {cf['days_with_eclipse']:4d} days  longest pass {cf['max_pass_min']:5.1f} min")
+    print(f"  hi-fi, paper's i   : {hp['umbra_hours']:8.1f} h/yr  {hp['days_with_umbra']:4d} days  longest pass {hp['max_pass_min']:5.1f} min  "
+          f"(+{hp['penumbra_hours']:.1f} h penumbra; node drift {hp['node_drift_deg_per_year']:+.2f}°/yr)")
+    if "hifi_retuned" in r:
+        hr = r["hifi_retuned"]
+        print(f"  hi-fi, retuned i   : {hr['umbra_hours']:8.1f} h/yr  {hr['days_with_umbra']:4d} days  longest pass {hr['max_pass_min']:5.1f} min  "
+              f"(i = {r['retuned_inclination_deg']:.4f}°, Δi = {r['retuned_inclination_deg'] - r['orbit']['inclination_deg']:+.4f}°; residual drift {hr['node_drift_deg_per_year']:+.2f}°/yr)")
+    if a.json:
+        import json
+
+        json.dump(r, open(a.json, "w"))
+        print("wrote", a.json)
+
+
 def cmd_reference(a):
     from .reference import write_reference
 
@@ -91,6 +112,13 @@ def main(argv=None):
     s.add_argument("--port", type=int, default=0, help="local port (default: a free one)")
     s.add_argument("--no-browser", action="store_true", help="just serve; do not open a browser")
     s.set_defaults(fn=cmd_viz)
+    s = sub.add_parser("hifi", help="high-fidelity cross-check: J2–J6 + Sun/Moon (DE440) propagation with a conical shadow")
+    s.add_argument("--alt", type=float, default=800.0)
+    s.add_argument("--raan", type=float, default=270.0)
+    s.add_argument("--days", type=float, default=365.2422)
+    s.add_argument("--no-retune", action="store_true", help="keep the J2-only inclination (report the node drift instead of correcting it)")
+    s.add_argument("--json", help="also write the full comparison (daily series included) to this file")
+    s.set_defaults(fn=cmd_hifi)
     s = sub.add_parser("reference", help="write reference values (JSON) for cross-checking other implementations")
     s.add_argument("out", nargs="?", default="reference.json")
     s.set_defaults(fn=cmd_reference)

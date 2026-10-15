@@ -37,7 +37,7 @@ from kelvinzero import (
     yearly_eclipse_stats,
     ltan_hours,
 )
-from kelvinzero.constants import R_EARTH
+from kelvinzero.constants import J2, MU, R_EARTH
 
 
 def ang_close(a, b, tol):
@@ -185,3 +185,63 @@ def test_beta_matches_region_picture():
     o = Orbit(1500, 270)
     d = np.arange(0, 366)
     assert np.all(np.abs(np.degrees(beta_angle(o, d))) >= no_eclipse_beta_deg(1500) - 1e-9)
+
+
+# ---------------------------------------------------------------- high-fidelity module (no ephemeris needed)
+def test_hifi_zonal_gradient_matches_textbook_j2_and_finite_differences():
+    hifi = pytest.importorskip("kelvinzero.hifi")
+    r = np.array([3000.0, -5000.0, 4000.0])
+    rr = np.linalg.norm(r)
+    k = -MU / rr**3
+    f = 1.5 * J2 * (R_EARTH / rr) ** 2
+    ref = np.array([k * r[0] * (1 - f * (5 * r[2] ** 2 / rr**2 - 1)), k * r[1] * (1 - f * (5 * r[2] ** 2 / rr**2 - 1)), k * r[2] * (1 - f * (5 * r[2] ** 2 / rr**2 - 3))])
+    assert np.max(np.abs(np.array(hifi.zonal_accel(r, {2: J2})) - ref) / np.abs(ref)) < 1e-12
+
+    def U(p):
+        rn = np.linalg.norm(p)
+        s = p[2] / rn
+        return MU / rn * (1 - sum(Jn * (R_EARTH / rn) ** n * hifi._legendre(n, s)[0] for n, Jn in hifi.ZONALS.items()))
+
+    h = 1e-3
+    fd = np.array([(U(r + h * np.eye(3)[i]) - U(r - h * np.eye(3)[i])) / (2 * h) for i in range(3)])
+    assert np.max(np.abs(np.array(hifi.zonal_accel(r)) - fd) / np.abs(fd)) < 1e-7
+
+
+def test_hifi_conical_shadow_reduces_to_the_cylinder_with_the_sun_at_infinity():
+    hifi = pytest.importorskip("kelvinzero.hifi")
+    for h in (550, 1500):
+        far = hifi.conical_correction(h, 0.0, 1e14)
+        assert abs(far["umbra_s"] - far["cylinder_s"]) < 0.5
+        real = hifi.conical_correction(h, 0.0)
+        assert 6 < far["cylinder_s"] - real["umbra_s"] < 12  # the umbra cone narrows the pass by ~10 s
+        assert 6 < real["umbra_penumbra_s"] - far["cylinder_s"] < 12
+
+
+def test_hifi_j2_only_propagation_reproduces_the_secular_node_rate():
+    hifi = pytest.importorskip("kelvinzero.hifi")
+    pytest.importorskip("scipy")
+    o = Orbit(800, 270)
+    tr = hifi.propagate(o, 10.0, bodies=False, zonals={2: J2}, sample_s=60.0, ephemeris=_FakeEphemeris())
+    raan, inc, a, e = hifi.osculating(tr)
+    rate = (raan[-1] - raan[0]) / 10.0
+    a0 = R_EARTH + 800
+    n = np.sqrt(MU / a0**3)
+    analytic = np.degrees(-1.5 * n * J2 * (R_EARTH / a0) ** 2 * np.cos(np.radians(o.inclination_deg))) * 86400
+    assert abs(rate / analytic - 1) < 2e-3  # short-period wobble of the osculating node over 10 days
+    assert abs(a.mean() - a0) < 0.05  # the initial radius is corrected so the mean a is R + h
+    assert e.mean() < 2e-3
+
+
+class _FakeEphemeris:
+    """Stand-in so the J2-only propagation test needs no DE440 kernel."""
+
+    def __init__(self):
+        self.sun = np.zeros((4, 3))
+        self.moon = np.zeros((4, 3))
+        self.step = 1e9
+        self.t0 = 0.0
+
+    def at(self, t):
+        t = np.asarray(t, dtype=float)
+        z = np.zeros(t.shape + (3,))
+        return z, z
