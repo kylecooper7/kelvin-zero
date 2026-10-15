@@ -1,5 +1,5 @@
 // Deep links into the visualizer, used by the PDF whitepaper (and shareable URLs).
-//   ?view=eclipse&alt=800&raan=270&day=355&cam=antisun&frame=EMI
+//   ?view=eclipse&alt=800&raan=270&day=355&cam=antisun&frame=ECI   (frame=EMI, the frame's old name, is still accepted)
 // Any parameter may be omitted. `view` is a key of VIEW_PRESETS, `cam` a key of CAMERA_PRESETS.
 
 import { CAMERA_PRESETS, VIEW_PRESETS } from '../model/presets.js'
@@ -27,10 +27,10 @@ export function parseViewerLink(search) {
   if (!['view', 'alt', 'raan', 'day', 'cam', 'frame', 'mode'].some((k) => q.has(k))) return null
   const req = {}
   const view = q.get('view')
-  const frame = q.get('frame')
+  const frame = q.get('frame') === 'EMI' ? 'ECI' : q.get('frame') // EMI was the name until v0.2; links in the wild keep working
   if (view && VIEW_PRESETS[view]) {
     req.preset = { ...VIEW_PRESETS[view] }
-    if (frame === 'EMI' || frame === 'MSSI') {
+    if (frame === 'ECI' || frame === 'MSSI') {
       req.preset.coordinateFrame = frame
       if (frame !== VIEW_PRESETS[view].coordinateFrame) req.preset.name = `${VIEW_PRESETS[view].name} (${frame})`
     }

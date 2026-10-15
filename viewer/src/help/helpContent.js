@@ -36,21 +36,21 @@ export const helpContent = {
   coordinateFrame: {
     title: 'Coordinate frame',
     body:
-      'EMI (Earth Mean Inertial, ECI): x toward the vernal equinox, nothing rotates with time; SSO planes visibly precess (0.9856°/day) and the Sun circles the sky once a year along the ecliptic. MSSI (Mean-Sun Synchronous Inertial): ECI rotated about the spin axis by the mean solar longitude, so x always points at the mean Sun. SSO planes are frozen, and the true Sun traces the analemma around +x.',
+      'ECI (Earth-Centred Inertial, J2000): x toward the vernal equinox, nothing rotates with time; SSO planes visibly precess (0.9856°/day) and the Sun circles the sky once a year along the ecliptic. MSSI (Mean-Sun Synchronous Inertial): ECI rotated about the spin axis by the mean solar longitude, so x always points at the mean Sun. SSO planes are frozen, and the true Sun traces the analemma around +x.',
     learnMoreLabel: 'Whitepaper',
     learnMoreUrl: '#wp-frames',
   },
   viewMode: {
     title: 'Viewpoint',
     body:
-      'Earth-centred: the usual view, drawn in the selected frame (EMI or MSSI). Sun-centred: the Sun sits at the origin and the Earth travels its real orbit (shape, orientation and timing from the same ephemeris; perihelion in early January) with month and season markers. The Earth, its frames and orbits are enlarged about 1000× and the Sun shrunk so everything is visible — the orbit itself is to scale. Watch the amber MSSI x axis keep pointing at the Sun while the indigo EMI axes stay parallel to the fixed vernal-equinox line, and a sun-synchronous ring keep its angle to the Sun all year.',
+      'Earth-centred: the usual view, drawn in the selected frame (ECI or MSSI). Sun-centred: the Sun sits at the origin and the Earth travels its real orbit (shape, orientation and timing from the same ephemeris; perihelion in early January) with month and season markers. The Earth, its frames and orbits are enlarged about 1000× and the Sun shrunk so everything is visible — the orbit itself is to scale. Watch the amber MSSI x axis keep pointing at the Sun while the indigo ECI axes stay parallel to the fixed vernal-equinox line, and a sun-synchronous ring keep its angle to the Sun all year.',
     learnMoreLabel: 'Whitepaper',
     learnMoreUrl: '#wp-frames',
   },
   earthTextureMode: {
     title: 'Earth',
     body:
-      'Realistic: the globe spins with Greenwich sidereal time (GMST) — one turn per solar day in MSSI (365.24 per year), one per sidereal day in EMI (366.24); at day 0 (J2000 epoch, 12:00 UT) Greenwich sits under the mean Sun. At year-scale playback speeds that is many turns per second, so the spin strobes; use the “1 d / 6 s” playback speed to watch a rotation. Still: daily rotation is ignored and the texture stays fixed in the display frame. Hidden: the globe is replaced by a faint ghost sphere so the coordinate frames, planes and orbits can be seen through it.',
+      'Realistic: the globe spins with Greenwich sidereal time (GMST) — one turn per solar day in MSSI (365.24 per year), one per sidereal day in ECI (366.24); at day 0 (J2000 epoch, 12:00 UT) Greenwich sits under the mean Sun. At year-scale playback speeds that is many turns per second, so the spin strobes; use the “1 d / 6 s” playback speed to watch a rotation. Still: daily rotation is ignored and the texture stays fixed in the display frame. Hidden: the globe is replaced by a faint ghost sphere so the coordinate frames, planes and orbits can be seen through it.',
     learnMoreLabel: 'Whitepaper',
     learnMoreUrl: '#wp-frames',
   },
@@ -68,7 +68,7 @@ export const helpContent = {
   },
   orbitalPlaneRing: {
     title: 'Orbital plane ring',
-    body: 'The full circular orbit drawn in 3-D at radius R + h — the “SSO plane ring” of the notebooks. Frozen in MSSI, precessing in EMI.',
+    body: 'The full circular orbit drawn in 3-D at radius R + h — the “SSO plane ring” of the notebooks. Frozen in MSSI, precessing in ECI.',
     learnMoreLabel: 'Whitepaper',
     learnMoreUrl: '#wp-sso',
   },
@@ -94,7 +94,7 @@ export const helpContent = {
   analemma: {
     title: 'Analemma',
     body:
-      'Locus of the sub-solar point over one year in the MSSI frame: a figure-8 of ±23.44° in latitude and ±4° in longitude (longitude = −Equation of Time), caused by Earth’s orbital eccentricity and axial tilt. In EMI the same locus is simply the ecliptic (dashed), while the figure-8 drawn is the MSSI curve carried along with the mean Sun.',
+      'Locus of the sub-solar point over one year in the MSSI frame: a figure-8 of ±23.44° in latitude and ±4° in longitude (longitude = −Equation of Time), caused by Earth’s orbital eccentricity and axial tilt. In ECI the same locus is simply the ecliptic (dashed), while the figure-8 drawn is the MSSI curve carried along with the mean Sun.',
     learnMoreLabel: 'Whitepaper',
     learnMoreUrl: '#wp-sun',
   },
@@ -118,13 +118,13 @@ export const helpContent = {
   },
   latLonGrid: {
     title: 'Lat/Lon grid',
-    body: 'Reference graticule fixed in the display frame (20° parallels, 30° meridians). The brighter meridian is the frame’s x axis: vernal equinox in EMI, mean Sun in MSSI.',
+    body: 'Reference graticule fixed in the display frame (20° parallels, 30° meridians). The brighter meridian is the frame’s x axis: vernal equinox in ECI, mean Sun in MSSI.',
     learnMoreLabel: 'Whitepaper',
     learnMoreUrl: '#wp-frames',
   },
   framePlanes: {
     title: 'Frame planes',
-    body: 'Draws the coordinate planes through Earth’s centre, colour-coded by frame: the shared equatorial plane (xy) in grey, the EMI xz/yz planes in indigo and the MSSI xz/yz planes in amber (the MSSI xz-plane is the noon–midnight meridian plane, the yz-plane the dawn–dusk plane). Edges are solid for the displayed frame and dashed for the other. Hide the Earth to see them clearly.',
+    body: 'Draws the coordinate planes through Earth’s centre, colour-coded by frame: the shared equatorial plane (xy) in grey, the ECI xz/yz planes in indigo and the MSSI xz/yz planes in amber (the MSSI xz-plane is the noon–midnight meridian plane, the yz-plane the dawn–dusk plane). Edges are solid for the displayed frame and dashed for the other. Hide the Earth to see them clearly.',
     learnMoreLabel: 'Whitepaper',
     learnMoreUrl: '#wp-frames',
   },
@@ -136,7 +136,7 @@ export const helpContent = {
   },
   otherFrameAxes: {
     title: 'Frame axes',
-    body: 'Shows the x and y axes of both frames and the shared z (spin) axis: solid for the displayed frame, dashed for the other one. In MSSI the vernal-equinox axis turns once a year; in EMI the mean-Sun axis does.',
+    body: 'Shows the x and y axes of both frames and the shared z (spin) axis: solid for the displayed frame, dashed for the other one. In MSSI the vernal-equinox axis turns once a year; in ECI the mean-Sun axis does.',
     learnMoreLabel: 'Whitepaper',
     learnMoreUrl: '#wp-frames',
   },

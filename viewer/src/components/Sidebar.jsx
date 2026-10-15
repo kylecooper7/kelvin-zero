@@ -29,6 +29,11 @@ import { orbitColor, SWATCH } from '../theme/palette.js'
 import { ORBIT_PRESETS } from '../model/presets.js'
 import { BetaSparkline } from './BetaSparkline'
 
+const formatLtan = (raanOffsetDeg) => {
+  const h = (((12 + raanOffsetDeg / 15) % 24) + 24) % 24
+  return `${String(Math.floor(h)).padStart(2, '0')}:${String(Math.round((h % 1) * 60) % 60).padStart(2, '0')}`
+}
+
 function ColorSquareToggle({ checked, colorClass }) {
   return (
     <span
@@ -325,7 +330,7 @@ export function Sidebar({ open, model, setModel, timeDays = 0, onRequestDeleteOr
               />
 
               <SliderRow
-                label="RAAN offset from mean Sun (Ω)"
+                label={`RAAN offset from mean Sun (Ω) · LTAN ${formatLtan(orbitDraft.raanOffsetDeg)}`}
                 rightIcon={<HelpButtonBase onRequestHelp={onRequestHelp} helpId="raanOffsetDeg" />}
                 min={0}
                 max={360}
@@ -437,7 +442,7 @@ export function Sidebar({ open, model, setModel, timeDays = 0, onRequestDeleteOr
                 <HelpButtonBase onRequestHelp={onRequestHelp} helpId="coordinateFrame" />
               </div>
               <div className="mt-3 flex flex-wrap gap-2 text-xs" role="radiogroup" aria-label="Coordinate Frame">
-                {['EMI', 'MSSI'].map((t) => {
+                {['ECI', 'MSSI'].map((t) => {
                   const selected = coordinateFrameValue === t
                   return (
                     <button

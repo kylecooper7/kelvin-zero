@@ -8,7 +8,7 @@ Conventions::
     node offset    Om_off is measured in the MSSI frame, i.e. from the mean-Sun direction:
                    Om_off = 0   -> ascending node at mean noon (LTAN 12:00)
                    Om_off = 90  -> LTAN 18:00 (dawn-dusk),  Om_off = 270 -> LTAN 06:00
-    EMI RAAN       Om(d) = L(d) + Om_off + (Om_dot_J2 - L_dot) * t   (drift is 0 for an exact SSO)
+    ECI RAAN       Om(d) = L(d) + Om_off + (Om_dot_J2 - L_dot) * t   (drift is 0 for an exact SSO)
 """
 
 from __future__ import annotations
@@ -102,7 +102,7 @@ def altitude_for_sso_inclination_deg(inclination_deg, lo=ALT_MIN_KM, hi=ALT_MAX_
 
 # ---------------------------------------------------------------------------- geometry
 def raan_eci(orbit: Orbit, d):
-    """RAAN in EMI (radians) at day(s) d."""
+    """RAAN in ECI (radians) at day(s) d."""
     d = np.asarray(d, dtype=float)
     drift = raan_precession_rate(orbit.altitude_km, orbit.inclination_deg) - MEAN_SUN_RATE_RAD_S
     return wrap_two_pi(mean_sun_longitude(d) + orbit.raan_offset_deg * DEG + drift * d * SECONDS_PER_DAY)
@@ -126,7 +126,7 @@ def plane_normal(raan, inc):
 
 
 def orbit_normal_eci(orbit: Orbit, d):
-    """Orbit-plane unit normal in EMI at day(s) d."""
+    """Orbit-plane unit normal in ECI at day(s) d."""
     return plane_normal(raan_eci(orbit, d), orbit.inclination_deg * DEG)
 
 
@@ -140,13 +140,13 @@ def plane_point(raan, inc, u):
 
 
 def satellite_position_eci(orbit: Orbit, d):
-    """Satellite position in EMI (km) at day(s) d."""
+    """Satellite position in ECI (km) at day(s) d."""
     p = plane_point(raan_eci(orbit, d), orbit.inclination_deg * DEG, argument_of_latitude(orbit, d))
     return orbit.radius_km * p
 
 
 def orbit_ring_eci(orbit: Orbit, d, num_points: int = 240):
-    """Unit vectors (EMI) around the full orbit at day d, shape (num_points+1, 3)."""
+    """Unit vectors (ECI) around the full orbit at day d, shape (num_points+1, 3)."""
     u = np.linspace(0, TWO_PI, num_points + 1)
     return plane_point(raan_eci(orbit, d), orbit.inclination_deg * DEG, u)
 

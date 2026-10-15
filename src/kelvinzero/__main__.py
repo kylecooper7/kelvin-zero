@@ -125,7 +125,7 @@ def main(argv=None):
     s.add_argument("--view", choices=["overview", "eclipse", "frames", "helio", "sun"], help="preset view to open")
     s.add_argument("--day", type=float, help="timeline day (0-365.24)")
     s.add_argument("--cam", help="camera preset: sun, antisun, pole, side, follow, above")
-    s.add_argument("--frame", choices=["EMI", "MSSI"])
+    s.add_argument("--frame", choices=["ECI", "MSSI"])
     s.add_argument("--port", type=int, default=0, help="local port (default: a free one)")
     s.add_argument("--no-browser", action="store_true", help="just serve; do not open a browser")
     s.set_defaults(fn=cmd_viz)

@@ -1,6 +1,6 @@
 // Reference frames.
 //
-//  EMI  (Earth Mean Inertial, a.k.a. ECI): x toward the vernal equinox,
+//  ECI  (Earth-Centred Inertial, J2000 mean equator and equinox): x toward the vernal equinox,
 //       z along Earth's spin axis. Nothing rotates with time.
 //  MSSI (Mean-Sun Synchronous Inertial): ECI rotated about z by the mean
 //       longitude of the Sun, L(d). Its x axis always points at the mean Sun,
@@ -13,7 +13,7 @@
 import { DEG } from './constants.js'
 import { meanSunLongitude, wrapTwoPi } from './sun.js'
 
-/** @typedef {'EMI'|'MSSI'} Frame */
+/** @typedef {'ECI'|'MSSI'} Frame */
 
 /**
  * Rotation angle (radians, about +z) of the display frame relative to ECI.

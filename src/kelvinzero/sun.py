@@ -30,7 +30,7 @@ def wrap_two_pi(a):
 
 def mean_sun_longitude(d):
     """Mean longitude of the Sun L (radians). The mean Sun moves uniformly along the celestial
-    equator with right ascension L; this is also the MSSI frame angle relative to EMI."""
+    equator with right ascension L; this is also the MSSI frame angle relative to ECI."""
     return wrap_two_pi((280.46 + MEAN_SUN_RATE_DEG_DAY * np.asarray(d, dtype=float)) * DEG)
 
 
@@ -38,7 +38,7 @@ def mean_sun_longitude(d):
 class SunState:
     """Apparent-sun state at a given day. Angles in radians; ``eot = L - alpha`` is the equation
     of time (positive when a sundial runs fast); ``vec_eci`` is the unit vector toward the Sun
-    in the Earth Mean Inertial frame (x toward the vernal equinox, z along the spin axis)."""
+    in the Earth-Centred Inertial (J2000) frame (x toward the vernal equinox, z along the spin axis)."""
 
     L: np.ndarray
     g: np.ndarray
@@ -69,12 +69,12 @@ def sun_state(d) -> SunState:
 
 
 def sun_direction_eci(d):
-    """Unit vector toward the Sun in EMI (ECI), shape (..., 3)."""
+    """Unit vector toward the Sun in ECI (ECI), shape (..., 3)."""
     return sun_state(d).vec_eci
 
 
 def sun_direction_mssi(d):
-    """Unit vector toward the Sun in the MSSI frame (EMI rotated by -L about z). Its longitude is
+    """Unit vector toward the Sun in the MSSI frame (ECI rotated by -L about z). Its longitude is
     alpha - L = -EoT and its latitude the solar declination."""
     s = sun_state(d)
     c, sn = np.cos(-s.L), np.sin(-s.L)
@@ -92,7 +92,7 @@ def analemma_mssi(num_points: int = 400):
 
 
 def ecliptic_eci(num_points: int = 360):
-    """Locus of the sub-solar point in EMI over one year (the ecliptic). Returns
+    """Locus of the sub-solar point in ECI over one year (the ecliptic). Returns
     ``(days, lng_deg, lat_deg, vec)``."""
     d = np.linspace(0.0, TROPICAL_YEAR_DAYS, num_points + 1)
     v = sun_direction_eci(d)

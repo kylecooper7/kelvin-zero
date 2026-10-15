@@ -11,7 +11,7 @@ NumPy, a few hundred lines, and organised the way the paper is:
 | module | what it holds |
 |---|---|
 | `kelvinzero.sun` | the apparent Sun (USNO low-precision ephemeris), the mean Sun, the **analemma**, Earth's heliocentric position |
-| `kelvinzero.frames` | the **EMI** (inertial) and **MSSI** (mean-Sun synchronous) frames, sidereal time |
+| `kelvinzero.frames` | the **ECI** (inertial) and **MSSI** (mean-Sun synchronous) frames, sidereal time |
 | `kelvinzero.orbit` | the sun-synchronous condition, J2 nodal precession, 3-D positions, the **β angle**, the cylindrical-shadow **eclipse fraction**, yearly statistics |
 | `kelvinzero.regions` | the always / sometimes / never-eclipsed **region maps** and their ∂U / ∂I contours |
 | `kelvinzero.figures` | the paper's figures (matplotlib) |
@@ -66,7 +66,7 @@ npm run build    # refreshes the copy shipped in src/kelvinzero/viewer_dist
 ## The model in one paragraph
 
 A circular orbit of altitude *h* is sun-synchronous when its J2 nodal precession equals the mean
-Sun's rate, which fixes the inclination (`sso_inclination_deg`). In the **MSSI** frame — EMI
+Sun's rate, which fixes the inclination (`sso_inclination_deg`). In the **MSSI** frame — ECI
 rotated about the spin axis by the mean solar longitude *L(d)* — such a plane is frozen and the
 real Sun traces the **analemma** (`sun_direction_mssi`, `analemma_mssi`). The Sun's elevation
 above the plane is the **β angle** (`beta_angle`); the fraction of each revolution spent in
@@ -77,7 +77,7 @@ as always / sometimes / never eclipsed for a given altitude (`classify_regions`,
 `region_contours`).
 
 Conventions: `d` is days since J2000.0 (2000-01-01 12:00); the node offset Ω is measured from the
-mean Sun (Ω = 0 → LTAN 12:00, 90 → 18:00, 270 → 06:00); EMI has x toward the vernal equinox and z
+mean Sun (Ω = 0 → LTAN 12:00, 90 → 18:00, 270 → 06:00); ECI has x toward the vernal equinox and z
 along the spin axis.
 
 ## Verification
@@ -101,7 +101,7 @@ If you use the model or the paper, please cite the release (a `CITATION.cff` is 
 GitHub's "Cite this repository" button gives you BibTeX/APA):
 
 > K. Cooper and Y. Nikas, *Kelvin Zero: eclipse-minimising sun-synchronous orbits in a mean-Sun
-> rotating frame*, v0.2.0 (2026). https://doi.org/10.5281/zenodo.23382386
+> rotating frame*, v0.2.1 (2026). https://doi.org/10.5281/zenodo.23382386
 
 ## License
 

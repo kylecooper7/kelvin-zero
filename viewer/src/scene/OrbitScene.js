@@ -6,7 +6,7 @@
 //
 // Scene graph (rotations are about +z):
 //   root           display frame (static) — lat/lon grid lives here
-//   ├─ eciGroup    rotation −frameAngle(frame, d)      — orbits, Sun, ecliptic, EMI axis
+//   ├─ eciGroup    rotation −frameAngle(frame, d)      — orbits, Sun, ecliptic, ECI axis
 //   │   └─ orbit groups   rotation Ω_ECI(d)            — ring, ground track, satellite, RAAN vector
 //   ├─ mssiGroup   rotation L(d) − frameAngle          — analemma, eclipse regions, MSSI axis
 //   └─ earthGroup  rotation GMST(d) − frameAngle (realistic) or 0 (still) — textured Earth
@@ -375,10 +375,10 @@ export class OrbitScene {
     this.emiAxis = new THREE.Group()
     this.emiAxisSolid = new THREE.Group()
     this.emiAxisSolid.name = 'emiAxisSolid'
-    this.emiAxisSolid.add(this.#axisArrow(X, emiColor, 'EMI x · vernal equinox'), this.#axisArrow(Y, emiColor, 'EMI y', { tier: 2 }))
+    this.emiAxisSolid.add(this.#axisArrow(X, emiColor, 'ECI x · vernal equinox'), this.#axisArrow(Y, emiColor, 'ECI y', { tier: 2 }))
     this.emiAxisDashed = new THREE.Group()
     this.emiAxisDashed.name = 'emiAxisDashed'
-    this.emiAxisDashed.add(this.#axisArrow(X, emiColor, 'EMI x · vernal equinox', { dashed: true }), this.#axisArrow(Y, emiColor, 'EMI y', { dashed: true, tier: 2 }))
+    this.emiAxisDashed.add(this.#axisArrow(X, emiColor, 'ECI x · vernal equinox', { dashed: true }), this.#axisArrow(Y, emiColor, 'ECI y', { dashed: true, tier: 2 }))
     this.emiAxis.add(this.emiAxisSolid, this.emiAxisDashed)
     this.emiAxis.visible = false
     this.eciGroup.add(this.emiAxis)
@@ -405,7 +405,7 @@ export class OrbitScene {
 
   /**
    * Translucent coordinate planes, colour-coded by frame: the shared equatorial (xy) plane in
-   * neutral grey, the EMI xz/yz planes in indigo, the MSSI xz/yz planes in amber. Edges of the
+   * neutral grey, the ECI xz/yz planes in indigo, the MSSI xz/yz planes in amber. Edges of the
    * non-displayed frame are dashed, like its axes.
    */
   #buildFramePlanes() {
@@ -439,8 +439,8 @@ export class OrbitScene {
     this.displayGroup.add(this.equatorPlane)
     this.emiPlanes = new THREE.Group()
     this.emiPlanes.add(
-      plane(emi, 'EMI xz-plane', { x: Math.PI / 2, y: 0 }, { x: S * 0.92, y: 0, z: S }),
-      plane(emi, 'EMI yz-plane', { x: 0, y: Math.PI / 2 }, { x: 0, y: S * 0.92, z: -S }),
+      plane(emi, 'ECI xz-plane', { x: Math.PI / 2, y: 0 }, { x: S * 0.92, y: 0, z: S }),
+      plane(emi, 'ECI yz-plane', { x: 0, y: Math.PI / 2 }, { x: 0, y: S * 0.92, z: -S }),
     )
     this.emiPlanes.visible = false
     this.eciGroup.add(this.emiPlanes)
@@ -459,7 +459,7 @@ export class OrbitScene {
       sp.position.set(pos.x, pos.y, pos.z)
       return sp
     }
-    this.emiPlanes.add(frameLabel('EMI', emi, { x: S, y: 0, z: S + 0.16 }))
+    this.emiPlanes.add(frameLabel('ECI', emi, { x: S, y: 0, z: S + 0.16 }))
     this.mssiPlanes.add(frameLabel('MSSI', mssi, { x: S, y: 0, z: -S - 0.16 }))
     this.framePlanes = new THREE.Group() // kept for debugState compatibility
     this.framePlanes.visible = false
@@ -496,7 +496,7 @@ export class OrbitScene {
     const orbit = this.#polyline(orbitPts, { color: PAPER ? '#475569' : '#94a3b8', linewidth: 1.4, opacity: 0.8, dashed: true, dashSize: 0.18, gapSize: 0.12 })
     this.helioRoot.add(orbit)
 
-    // Vernal-equinox direction through the Sun (the fixed EMI x direction), for comparison with Earth's EMI axis.
+    // Vernal-equinox direction through the Sun (the fixed ECI x direction), for comparison with Earth's ECI axis.
     const vx = this.#polyline([{ x: -AU_SCENE * 1.25, y: 0, z: 0 }, { x: AU_SCENE * 1.25, y: 0, z: 0 }], { color: PAPER ? '#4338ca' : COLORS.emiAxis, linewidth: 1, opacity: 0.45, dashed: true, dashSize: 0.12, gapSize: 0.1 })
     const vxLabel = makeLabelSprite('vernal equinox direction', PAPER ? '#4338ca' : COLORS.emiAxis, { size: 0.04, tier: 1, far: [Infinity, 60, 60] })
     vxLabel.userData.label.helioAlways = true
@@ -774,7 +774,7 @@ export class OrbitScene {
     if (this.atmosphere) this.atmosphere.visible = !hidden
     this.ghostEarth.visible = hidden
     this.analemma.visible = !!vectors.analemma
-    this.ecliptic.visible = !!vectors.analemma && coordinateFrame === 'EMI'
+    this.ecliptic.visible = !!vectors.analemma && coordinateFrame === 'ECI'
     this.subSolar.visible = !!vectors.subSolarPoint
     this.sunLine.visible = !!vectors.sunDirectionLine
     this.sunSprite.visible = !!vectors.sunDirectionLine
@@ -783,7 +783,7 @@ export class OrbitScene {
     const axes = !!referenceOverlays.otherFrameAxes
     this.emiAxis.visible = axes
     this.mssiAxis.visible = axes
-    const emiIsDisplay = coordinateFrame === 'EMI'
+    const emiIsDisplay = coordinateFrame === 'ECI'
     this.emiAxisSolid.visible = emiIsDisplay
     this.emiAxisDashed.visible = !emiIsDisplay
     this.mssiAxisSolid.visible = !emiIsDisplay
@@ -800,7 +800,7 @@ export class OrbitScene {
 
   #applyTime({ timeDays: d, coordinateFrame, earthTextureMode }) {
     const helio = this.viewMode === 'helio'
-    // In the Sun-centred view the assembly is drawn in the inertial (EMI) orientation; the ecliptic tilt is on the assembly.
+    // In the Sun-centred view the assembly is drawn in the inertial (ECI) orientation; the ecliptic tilt is on the assembly.
     const fa = helio ? 0 : frameAngle(coordinateFrame, d)
     const L = meanSunLongitude(d)
     this.eciGroup.rotation.z = -fa

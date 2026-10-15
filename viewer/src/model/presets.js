@@ -30,7 +30,7 @@ export const VIEW_PRESETS = {
   },
   frames: {
     name: 'Frames',
-    coordinateFrame: 'EMI',
+    coordinateFrame: 'ECI',
     earthTextureMode: 'still',
     orbit: { orbitalPlaneRing: true, raanVector: true, satelliteMarker: true },
     vectors: { analemma: true, subSolarPoint: true, sunDirectionLine: true, terminator: false },

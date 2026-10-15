@@ -84,7 +84,7 @@ def test_analemma_extent_and_orientation():
 def test_mssi_frame_is_mean_sun_longitude():
     for d in (0.0, 50.5, 123.0, 200.0, 301.7):
         assert frame_angle("MSSI", d) == mean_sun_longitude(d)
-        assert frame_angle("EMI", d) == 0
+        assert frame_angle("ECI", d) == 0
 
 
 def test_year_markers():

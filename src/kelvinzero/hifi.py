@@ -157,7 +157,7 @@ def shadow_function(r, r_sun):
 @dataclass
 class Trajectory:
     t: np.ndarray  # s since J2000
-    r: np.ndarray  # (n,3) km, ICRF/EMI
+    r: np.ndarray  # (n,3) km, ICRF/ECI
     v: np.ndarray  # (n,3) km/s
     r_sun: np.ndarray  # (n,3) km
     inclination_deg: float

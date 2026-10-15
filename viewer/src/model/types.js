@@ -28,7 +28,7 @@
 
 /**
  * @typedef {Object} ViewToggles
- * @property {'EMI' | 'MSSI' | 'SCI'} coordinateFrame
+ * @property {'ECI' | 'MSSI' | 'SCI'} coordinateFrame
  * @property {'realistic' | 'still' | 'hidden'} [earthTextureMode]
  * @property {'geo' | 'helio'} [viewMode] - Earth-centred or Sun-centred scene
  */

@@ -1,13 +1,13 @@
 """Reference frames.
 
-EMI (Earth Mean Inertial, a.k.a. ECI): x toward the vernal equinox, z along Earth's spin axis.
+ECI (Earth-Centred Inertial, J2000 mean equator and equinox): x toward the vernal equinox, z along Earth's spin axis.
 Nothing rotates with time.
 
-MSSI (Mean-Sun Synchronous Inertial): EMI rotated about z by the mean longitude of the Sun L(d).
+MSSI (Mean-Sun Synchronous Inertial): ECI rotated about z by the mean longitude of the Sun L(d).
 Its x axis always points at the mean Sun, so the frame turns once per tropical year and an
 exactly sun-synchronous orbit plane is frozen in it.
 
-All physics is computed in EMI; a display frame is a rotation about z by -frame_angle(frame, d).
+All physics is computed in ECI; a display frame is a rotation about z by -frame_angle(frame, d).
 """
 
 from __future__ import annotations
@@ -19,12 +19,12 @@ from .sun import mean_sun_longitude, wrap_two_pi
 
 
 def frame_angle(frame: str, d):
-    """Rotation angle (radians, about +z) of the display frame relative to EMI."""
+    """Rotation angle (radians, about +z) of the display frame relative to ECI."""
     if frame == "MSSI":
         return mean_sun_longitude(d)
-    if frame == "EMI":
+    if frame == "ECI":
         return np.zeros_like(np.asarray(d, dtype=float))
-    raise ValueError(f"unknown frame {frame!r}; use 'EMI' or 'MSSI'")
+    raise ValueError(f"unknown frame {frame!r}; use 'ECI' or 'MSSI'")
 
 
 def gmst(d):
@@ -44,7 +44,7 @@ def rotate_z(v, ang):
 
 
 def eci_to_display(v, frame: str, d):
-    """EMI -> display-frame coordinates."""
+    """ECI -> display-frame coordinates."""
     return rotate_z(v, -frame_angle(frame, d))
 
 
