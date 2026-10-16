@@ -119,7 +119,7 @@ function HelpButtonBase({ helpId, onRequestHelp }) {
   )
 }
 
-export function Sidebar({ open, model, setModel, timeDays = 0, onRequestDeleteOrbit, onRequestHelp }) {
+export function Sidebar({ open, drawer = false, onClose, model, setModel, timeDays = 0, onRequestDeleteOrbit, onRequestHelp }) {
   const [orbitsOpen, setOrbitsOpen] = useState(true)
   const [calculateOpen, setCalculateOpen] = useState(true)
   const [togglesOpen, setTogglesOpen] = useState(true)
@@ -215,9 +215,9 @@ export function Sidebar({ open, model, setModel, timeDays = 0, onRequestDeleteOr
 
   return (
     <aside
-      className={`relative z-20 h-dvh flex-none overflow-hidden text-white transition-[width] duration-200 ease-out ${
+      className={`${drawer ? 'fixed left-0 top-0 z-40' : 'relative z-20 flex-none'} h-dvh overflow-hidden text-white transition-[width] duration-200 ease-out ${
         open
-          ? 'w-[340px] bg-gradient-to-b from-indigo-950/90 via-black to-black shadow-2xl ring-1 ring-white/10'
+          ? `${drawer ? 'w-[min(340px,88vw)]' : 'w-[340px]'} bg-gradient-to-b from-indigo-950/90 via-black to-black shadow-2xl ring-1 ring-white/10`
           : 'w-0 bg-transparent shadow-none ring-0'
       }`}
       aria-hidden={!open}
@@ -227,6 +227,11 @@ export function Sidebar({ open, model, setModel, timeDays = 0, onRequestDeleteOr
           open ? 'translate-x-0 opacity-100' : '-translate-x-full opacity-0'
         }`}
       >
+        {drawer ? (
+          <button type="button" onClick={onClose} aria-label="Close menu" className="absolute right-3 top-3 z-10 flex h-8 w-8 items-center justify-center rounded-full bg-white/10 text-white/80 ring-1 ring-inset ring-white/10">
+            ×
+          </button>
+        ) : null}
         <div className="flex items-center justify-between">
           <button
             type="button"

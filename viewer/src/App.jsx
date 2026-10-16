@@ -29,10 +29,13 @@ import { PAPER } from './scene/OrbitScene.js'
 import { parseViewerLink } from './utils/deeplink.js'
 import { inclinationFromAltitude } from './model/orbit'
 import { roundTo as round } from './utils/number'
+import { useIsMobile } from './hooks/useMediaQuery.js'
 
 export default function App() {
   const [active, setActive] = useState(() => (typeof window !== 'undefined' && window.location.hash.startsWith('#wp-') ? 'whitepaper' : 'visualizer'))
-  const [sidebarOpen, setSidebarOpen] = useState(true)
+  const isMobile = useIsMobile()
+  const [sidebarOpen, setSidebarOpen] = useState(() => !(typeof window !== 'undefined' && window.matchMedia('(max-width: 899px)').matches))
+  useEffect(() => { if (isMobile) setSidebarOpen(false) }, [isMobile])
   const [fullscreen, setFullscreen] = useState(false)
   const [timelineDays, setTimelineDays] = useState(0)
   const [timelinePlaying, setTimelinePlaying] = useState(false)
@@ -276,14 +279,19 @@ export default function App() {
         whitepaperMode ? (
           null
         ) : (
+          <>
+          {isMobile && sidebarOpen ? <button type="button" aria-label="Close menu" className="fixed inset-0 z-30 bg-black/50 backdrop-blur-[2px]" onClick={() => setSidebarOpen(false)} /> : null}
           <Sidebar
             open={sidebarOpen}
+            drawer={isMobile}
+            onClose={() => setSidebarOpen(false)}
             model={model}
             setModel={setModel}
             timeDays={timelineDays}
             onRequestDeleteOrbit={requestDeleteOrbit}
             onRequestHelp={requestHelp}
           />
+          </>
         )
       ) : null}
 
@@ -361,8 +369,8 @@ export default function App() {
         {active === 'visualizer' ? (
           <main className={`relative z-10 flex flex-1 flex-col ${fullscreen ? 'pb-0' : 'pb-6'}`}>
             {!fullscreen ? (
-              <div className="flex justify-end px-6 pt-2">
-                <div className="hidden max-w-full items-start gap-3 sm:flex">
+              <div className="flex justify-end px-3 pt-2 sm:px-6">
+                <div className="flex max-w-full items-start gap-3">
                   <div className="flex flex-1 items-start gap-3 overflow-x-auto pb-3 [scrollbar-gutter:stable] [scrollbar-width:thin] [scrollbar-color:rgba(255,255,255,0.25)_transparent] [&::-webkit-scrollbar]:h-2 [&::-webkit-scrollbar-track]:bg-transparent [&::-webkit-scrollbar-thumb]:rounded-full [&::-webkit-scrollbar-thumb]:bg-white/20 [&::-webkit-scrollbar-thumb:hover]:bg-white/30">
                     {model.views.map((v) => {
                       const isActive = v.id === model.activeViewId
@@ -437,7 +445,7 @@ export default function App() {
                 <div className="relative flex flex-1">
                   <div className={`absolute inset-0 flex items-center justify-center bg-white/5 ${fullscreen ? '' : 'rounded-2xl ring-1 ring-inset ring-white/10'}`}>
                     <div className={`relative h-full w-full ${fullscreen ? '' : 'overflow-hidden rounded-2xl'}`}>
-                      <div className="pointer-events-none absolute left-4 top-4 z-10 flex flex-col items-start gap-1.5 text-[10px] font-semibold uppercase tracking-[0.12em] text-white/60">
+                      <div className="pointer-events-none absolute left-3 top-3 z-10 flex max-w-[calc(100%-1.5rem)] flex-col items-start gap-1.5 text-[10px] font-semibold uppercase tracking-[0.12em] text-white/60 sm:left-4 sm:top-4">
                         <div className="flex items-center gap-1.5">
                           <span className="rounded-md bg-slate-950/50 px-2 py-1 text-white/85 ring-1 ring-inset ring-white/10">{helioView ? 'Sun-centred · ecliptic' : (activeView.config.toggles.coordinateFrame ?? 'MSSI')}</span>
                           <span className="rounded-md bg-slate-950/50 px-2 py-1 ring-1 ring-inset ring-white/10">{{ still: 'Still Earth', hidden: 'Earth hidden' }[activeView.config.toggles.earthTextureMode ?? 'realistic'] ?? 'Rotating Earth'}</span>
@@ -473,8 +481,8 @@ export default function App() {
             </div>
 
             <div className={`mt-auto ${fullscreen ? 'px-6 pb-4 pt-4' : 'px-6 pb-4 pt-6'}`}>
-              <div className="flex w-full items-center gap-4 text-white/80">
-                <div className="w-[168px] flex-none leading-tight">
+              <div className="flex w-full flex-wrap items-center gap-x-4 gap-y-3 text-white/80">
+                <div className="w-[128px] flex-none leading-tight sm:w-[168px]">
                   <div className="text-[11px] font-semibold tabular-nums text-white/90">Day {timelineDays.toFixed(2)}</div>
                   <div className="text-[11px] tabular-nums text-white/50">{formatDayLabel(timelineDays)}</div>
                 </div>
@@ -496,7 +504,7 @@ export default function App() {
                 </button>
 
                 <div
-                  className="flex-1"
+                  className="min-w-[200px] flex-1 basis-full sm:basis-auto"
                   onPointerDown={() => {
                     if (timelinePlaying) setTimelinePlaying(false)
                   }}
