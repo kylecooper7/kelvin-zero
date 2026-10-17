@@ -65,11 +65,26 @@ export const VIEW_PRESETS = {
 
 /** Orbit parameter presets (inclination is derived from altitude by the caller). */
 export const ORBIT_PRESETS = [
-  { id: 'noon', name: 'Noon–midnight, 550 km', altitudeKm: 550, raanOffsetDeg: 0 },
-  { id: 'dawn800', name: 'Dawn–dusk, 800 km (LTAN 06:00)', altitudeKm: 800, raanOffsetDeg: 270 },
-  { id: 'dusk800', name: 'Dawn–dusk, 800 km (LTAN 18:00)', altitudeKm: 800, raanOffsetDeg: 90 },
-  { id: 'kz1500', name: 'Kelvin Zero, 1500 km (eclipse-free)', altitudeKm: 1500, raanOffsetDeg: 270 },
-  { id: 'default', name: 'Near dawn–dusk, 800 km (LTAN 05:20)', altitudeKm: 800, raanOffsetDeg: 260 },
+  { id: 'noon', group: 'Reference orbits', name: 'Noon–midnight, 550 km', altitudeKm: 550, raanOffsetDeg: 0 },
+  { id: 'dawn800', group: 'Reference orbits', name: 'Dawn–dusk, 800 km (LTAN 06:00)', altitudeKm: 800, raanOffsetDeg: 270 },
+  { id: 'dusk800', group: 'Reference orbits', name: 'Dawn–dusk, 800 km (LTAN 18:00)', altitudeKm: 800, raanOffsetDeg: 90 },
+  { id: 'kz1500', group: 'Reference orbits', name: 'Kelvin Zero, 1500 km (eclipse-free)', altitudeKm: 1500, raanOffsetDeg: 270 },
+  { id: 'default', group: 'Reference orbits', name: 'Near dawn–dusk, 800 km (LTAN 05:20)', altitudeKm: 800, raanOffsetDeg: 260 },
+  // Announced orbital-computing systems, at the altitudes filed or published by October 2026 (paper, Table 5).
+  // Local time of the node is not public for any of them; dawn–dusk (LTAN 18:00) is assumed.
+  { id: 'suncatcher', group: 'Announced systems (as filed, 2026)', name: 'Google Project Suncatcher, 650 km', altitudeKm: 650, raanOffsetDeg: 90 },
+  { id: 'starcloud600', group: 'Announced systems (as filed, 2026)', name: 'Starcloud, 600 km shell', altitudeKm: 600, raanOffsetDeg: 90 },
+  { id: 'starcloud850', group: 'Announced systems (as filed, 2026)', name: 'Starcloud, 850 km shell', altitudeKm: 850, raanOffsetDeg: 90 },
+  { id: 'spacex500', group: 'Announced systems (as filed, 2026)', name: 'SpaceX Orbital Data Center, 500 km shell', altitudeKm: 500, raanOffsetDeg: 90 },
+  { id: 'spacex1000', group: 'Announced systems (as filed, 2026)', name: 'SpaceX Orbital Data Center, 1000 km shell', altitudeKm: 1000, raanOffsetDeg: 90 },
+  { id: 'spacex1500', group: 'Announced systems (as filed, 2026)', name: 'SpaceX Orbital Data Center, 1500 km shell (eclipse-free)', altitudeKm: 1500, raanOffsetDeg: 90 },
+  // Flying dawn–dusk missions (paper, Table 4 and references 8–10; eoPortal for the radar missions).
+  { id: 'terrasarx', group: 'Flying missions', name: 'TerraSAR-X, 514 km (LTAN 18:00)', altitudeKm: 514, raanOffsetDeg: 90 },
+  { id: 'iris', group: 'Flying missions', name: 'IRIS, 645 km (LTAN 06:00)', altitudeKm: 645, raanOffsetDeg: 270 },
+  { id: 'hinode', group: 'Flying missions', name: 'Hinode, 680 km (LTAN 18:00)', altitudeKm: 680, raanOffsetDeg: 90 },
+  { id: 'sentinel1', group: 'Flying missions', name: 'Sentinel-1, 693 km (LTAN 18:00)', altitudeKm: 693, raanOffsetDeg: 90 },
+  { id: 'proba2', group: 'Flying missions', name: 'PROBA-2, 725 km (LTAN 06:00)', altitudeKm: 725, raanOffsetDeg: 270 },
+  { id: 'radarsat2', group: 'Flying missions', name: 'RADARSAT-2, 798 km (LTAN 18:00)', altitudeKm: 798, raanOffsetDeg: 90 },
 ]
 
 /** Camera positions in scene units (Earth radius = 1); the scene normalises distance. */
