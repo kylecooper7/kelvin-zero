@@ -4,7 +4,7 @@ build-backend = "setuptools.build_meta"
 
 [project]
 name = "kelvinzero"
-version = "0.2.5"
+version = "0.2.6"
 description = "Eclipse-minimising sun-synchronous orbits in a mean-Sun rotating frame: the model and the visualizer behind the Kelvin Zero paper."
 readme = "README.md"
 requires-python = ">=3.10"

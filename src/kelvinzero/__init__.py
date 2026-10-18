@@ -59,6 +59,6 @@ from .sun import (
     year_markers,
 )
 
-__version__ = "0.1.0"
+__version__ = "0.2.6"
 
 __all__ = [name for name in dir() if not name.startswith("_")]

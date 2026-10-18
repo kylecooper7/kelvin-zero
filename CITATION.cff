@@ -2,8 +2,8 @@ cff-version: 1.2.0
 message: "If you use this model or the paper, please cite it as below."
 title: "Kelvin Zero: eclipse-minimising sun-synchronous orbits in a mean-Sun rotating frame"
 type: software
-version: 0.2.5
-date-released: 2026-10-15
+version: 0.2.6
+date-released: 2026-10-18
 license: MIT
 doi: 10.5281/zenodo.23384441
 identifiers:
