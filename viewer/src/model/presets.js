@@ -71,10 +71,10 @@ export const ORBIT_PRESETS = [
   { id: 'kz1500', group: 'Reference orbits', name: 'Kelvin Zero, 1500 km (eclipse-free)', altitudeKm: 1500, raanOffsetDeg: 270 },
   { id: 'default', group: 'Reference orbits', name: 'Near dawn–dusk, 800 km (LTAN 05:20)', altitudeKm: 800, raanOffsetDeg: 260 },
   // Announced orbital-computing systems, at the altitudes filed or published by October 2026 (paper, Table 5).
-  // Local time of the node is not public for any of them; dawn–dusk (LTAN 18:00) is assumed.
+  // Starcloud's filing states a nominal 06:00 crossing (LTAN 06:00); the others give no local time and dawn–dusk (LTAN 18:00) is assumed.
   { id: 'suncatcher', group: 'Announced systems (as filed, 2026)', name: 'Google Project Suncatcher, 650 km', altitudeKm: 650, raanOffsetDeg: 90 },
-  { id: 'starcloud600', group: 'Announced systems (as filed, 2026)', name: 'Starcloud, 600 km shell', altitudeKm: 600, raanOffsetDeg: 90 },
-  { id: 'starcloud850', group: 'Announced systems (as filed, 2026)', name: 'Starcloud, 850 km shell', altitudeKm: 850, raanOffsetDeg: 90 },
+  { id: 'starcloud600', group: 'Announced systems (as filed, 2026)', name: 'Starcloud, 600 km shell (LTAN 06:00, as filed)', altitudeKm: 600, raanOffsetDeg: 270 },
+  { id: 'starcloud850', group: 'Announced systems (as filed, 2026)', name: 'Starcloud, 850 km shell (LTAN 06:00, as filed)', altitudeKm: 850, raanOffsetDeg: 270 },
   { id: 'spacex500', group: 'Announced systems (as filed, 2026)', name: 'SpaceX Orbital Data Center, 500 km shell', altitudeKm: 500, raanOffsetDeg: 90 },
   { id: 'spacex1000', group: 'Announced systems (as filed, 2026)', name: 'SpaceX Orbital Data Center, 1000 km shell', altitudeKm: 1000, raanOffsetDeg: 90 },
   { id: 'spacex1500', group: 'Announced systems (as filed, 2026)', name: 'SpaceX Orbital Data Center, 1500 km shell (eclipse-free)', altitudeKm: 1500, raanOffsetDeg: 90 },
