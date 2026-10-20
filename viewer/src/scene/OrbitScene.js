@@ -595,7 +595,7 @@ export class OrbitScene {
   }
 
   // ---------------------------------------------------------------- per-orbit visuals
-  #buildOrbitVisual(orbit, idx, flags) {
+  #buildOrbitVisual(orbit, idx, flags, { skipRegions = false } = {}) {
     const color = ORBIT_COLORS[idx % ORBIT_COLORS.length]
     const inc = orbit.inclinationDeg * DEG
     const rr = 1 + orbit.altitudeKm / R_EARTH
@@ -635,7 +635,7 @@ export class OrbitScene {
     }
     this.eciGroup.add(group)
 
-    if (flags.eclipseRegions) this.#buildRegions(vis)
+    if (flags.eclipseRegions && !skipRegions) this.#buildRegions(vis)
     return vis
   }
 
@@ -761,6 +761,7 @@ export class OrbitScene {
       prev.displayOrbits !== next.displayOrbits ||
       prev.coordinateFrame !== next.coordinateFrame
     if (structural) this.#rebuildOrbits(next)
+    else if (prev.previewing && !next.previewing) this.#rebuildOrbits(next) // a drag ended on an unchanged value: rebuild once so the regions match
     const mode = next.viewMode === 'helio' ? 'helio' : 'geo'
     if (mode !== this.viewMode) {
       this.viewMode = mode
@@ -771,14 +772,24 @@ export class OrbitScene {
     this.#applyTime(next)
   }
 
-  #rebuildOrbits({ orbits, displayOrbits }) {
-    for (const vis of this.orbitVisuals.values()) this.#disposeOrbitVisual(vis)
+  // While a slider is being dragged (`previewing`) the orbit geometry follows the pointer every frame, but
+  // the eclipse-region map and contours (the costly part) are carried over from the last committed build
+  // and refreshed when the drag ends, so a drag can never stall the frame.
+  #rebuildOrbits({ orbits, displayOrbits, previewing = false }) {
+    const old = new Map(this.orbitVisuals)
     this.orbitVisuals.clear()
     orbits.forEach((orbit, idx) => {
       const flags = displayOrbits[orbit.id] ?? {}
-      if (!Object.values(flags).some(Boolean)) return
-      this.orbitVisuals.set(orbit.id, this.#buildOrbitVisual(orbit, idx, flags))
+      const prev = old.get(orbit.id)
+      old.delete(orbit.id)
+      if (!Object.values(flags).some(Boolean)) { if (prev) this.#disposeOrbitVisual(prev); return }
+      const keepRegions = previewing && prev && flags.eclipseRegions && prev.mssiObjects.length > 0 && prev.idx === idx
+      if (prev) { if (keepRegions) this.#disposeObject(prev.group); else this.#disposeOrbitVisual(prev) }
+      const vis = this.#buildOrbitVisual(orbit, idx, flags, { skipRegions: keepRegions })
+      if (keepRegions) { vis.mssiObjects = prev.mssiObjects; vis.regionAlpha = prev.regionAlpha }
+      this.orbitVisuals.set(orbit.id, vis)
     })
+    for (const vis of old.values()) this.#disposeOrbitVisual(vis)
   }
 
   #applyToggles({ vectors = {}, referenceOverlays = {}, coordinateFrame, earthTextureMode }) {

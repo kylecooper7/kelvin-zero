@@ -5,11 +5,10 @@ export function useUndoRedoShortcuts({ canUndo, canRedo, undo, redo }) {
     const onKeyDown = (e) => {
       const target = e.target
       const tag = target?.tagName
-      const isEditable =
-        tag === 'INPUT' ||
-        tag === 'TEXTAREA' ||
-        tag === 'SELECT' ||
-        target?.isContentEditable
+      // only text-entry fields keep the shortcut for themselves; a slider, checkbox or button that still
+      // has focus after a click must not block undo
+      const textInput = tag === 'INPUT' && !['range', 'checkbox', 'radio', 'button', 'submit', 'color'].includes(target.type)
+      const isEditable = textInput || tag === 'TEXTAREA' || tag === 'SELECT' || target?.isContentEditable
 
       if (isEditable) return
 

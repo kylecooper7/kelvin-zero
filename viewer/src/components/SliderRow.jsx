@@ -79,7 +79,7 @@ export function SliderRow({
           onChange={(e) => handleRangeChange(Number(e.target.value))}
           onPointerUp={(e) => commitRangeValue(Number(e.currentTarget.value))}
           onKeyUp={(e) => {
-            if (e.key === 'Enter') commitRangeValue(Number(e.currentTarget.value))
+            if (['Enter', 'ArrowLeft', 'ArrowRight', 'ArrowUp', 'ArrowDown', 'PageUp', 'PageDown', 'Home', 'End'].includes(e.key)) commitRangeValue(Number(e.currentTarget.value))
           }}
         />
         <div className="flex items-center gap-2 text-[11px] text-white/80">

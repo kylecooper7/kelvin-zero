@@ -119,7 +119,7 @@ function HelpButtonBase({ helpId, onRequestHelp }) {
   )
 }
 
-export function Sidebar({ open, drawer = false, onClose, model, setModel, timeDays = 0, onRequestDeleteOrbit, onRequestHelp }) {
+export function Sidebar({ onOrbitPreview, open, drawer = false, onClose, model, setModel, timeDays = 0, onRequestDeleteOrbit, onRequestHelp }) {
   const [orbitsOpen, setOrbitsOpen] = useState(true)
   const [calculateOpen, setCalculateOpen] = useState(true)
   const [togglesOpen, setTogglesOpen] = useState(true)
@@ -149,6 +149,21 @@ export function Sidebar({ open, drawer = false, onClose, model, setModel, timeDa
       initialMeanAnomalyDeg: activeOrbit.initialMeanAnomalyDeg,
     })
   }
+
+  // While the drafts differ from the committed orbit (a slider is being dragged) the scene previews them.
+  const previewRaf = useRef(0)
+  useEffect(() => {
+    if (!onOrbitPreview) return undefined
+    const o = activeOrbit
+    const differs =
+      orbitDraft.altitudeKm !== o.altitudeKm || orbitDraft.inclinationDeg !== o.inclinationDeg ||
+      orbitDraft.raanOffsetDeg !== o.raanOffsetDeg || orbitDraft.initialMeanAnomalyDeg !== o.initialMeanAnomalyDeg
+    cancelAnimationFrame(previewRaf.current)
+    previewRaf.current = requestAnimationFrame(() => {
+      onOrbitPreview(differs ? { id: o.id, params: { altitudeKm: orbitDraft.altitudeKm, inclinationDeg: orbitDraft.inclinationDeg, raanOffsetDeg: orbitDraft.raanOffsetDeg, initialMeanAnomalyDeg: orbitDraft.initialMeanAnomalyDeg } } : null)
+    })
+    return () => cancelAnimationFrame(previewRaf.current)
+  }, [orbitDraft, activeOrbit, onOrbitPreview])
 
   // Derived quantities for the active orbit (cheap; recomputed on change).
   const derived = useMemo(() => {

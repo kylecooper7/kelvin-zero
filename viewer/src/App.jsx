@@ -45,6 +45,13 @@ export default function App() {
   const [helpId, setHelpId] = useState(null)
 
   const { model, setModel, undo, redo, canUndo, canRedo } = useHistoryModel(createInitialModel, { limit: 100 })
+  // Live slider preview: while a slider is dragged the active orbit's draft parameters drive the scene
+  // directly (no history entry); the model, and everything derived from it, updates on release.
+  const [orbitPreview, setOrbitPreview] = useState(null)
+  const sceneOrbits = useMemo(
+    () => (orbitPreview ? model.orbits.map((o) => (o.id === orbitPreview.id ? { ...o, ...orbitPreview.params } : o)) : model.orbits),
+    [model.orbits, orbitPreview],
+  )
 
   const activeView = useMemo(() => model.views.find((v) => v.id === model.activeViewId) ?? model.views[0], [model])
 
@@ -282,6 +289,7 @@ export default function App() {
           <>
           {isMobile && sidebarOpen ? <button type="button" aria-label="Close menu" className="fixed inset-0 z-30 bg-black/50 backdrop-blur-[2px]" onClick={() => setSidebarOpen(false)} /> : null}
           <Sidebar
+            onOrbitPreview={setOrbitPreview}
             open={sidebarOpen}
             drawer={isMobile}
             onClose={() => setSidebarOpen(false)}
@@ -460,7 +468,8 @@ export default function App() {
                         coordinateFrame={activeView.config.toggles.coordinateFrame ?? 'MSSI'}
                         earthTextureMode={activeView.config.toggles.earthTextureMode ?? 'realistic'}
                         viewMode={activeView.config.toggles.viewMode ?? 'geo'}
-                        orbits={model.orbits}
+                        orbits={sceneOrbits}
+                        previewing={!!orbitPreview}
                         displayOrbits={activeView.config.display.orbits}
                         timeDays={timelineDays}
                         vectors={activeView.config.display.vectors}

@@ -22,6 +22,7 @@ export function GlobeView({
   referenceOverlays = DEFAULT_OVERLAYS,
   cameraRequest = null,
   viewMode = 'geo',
+  previewing = false,
 }) {
   const containerRef = useRef(null)
   const sceneRef = useRef(null)
@@ -47,8 +48,8 @@ export function GlobeView({
   }, [])
 
   useEffect(() => {
-    sceneRef.current?.setProps({ coordinateFrame, earthTextureMode, viewMode, orbits, displayOrbits, timeDays, vectors, referenceOverlays })
-  }, [coordinateFrame, earthTextureMode, viewMode, orbits, displayOrbits, timeDays, vectors, referenceOverlays])
+    sceneRef.current?.setProps({ coordinateFrame, earthTextureMode, viewMode, orbits, displayOrbits, timeDays, vectors, referenceOverlays, previewing })
+  }, [coordinateFrame, earthTextureMode, viewMode, orbits, displayOrbits, timeDays, vectors, referenceOverlays, previewing])
 
   useEffect(() => {
     const scene = sceneRef.current
