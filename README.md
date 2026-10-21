@@ -103,6 +103,12 @@ GitHub's "Cite this repository" button gives you BibTeX/APA):
 > K. Cooper and Y. Nikas, *Kelvin Zero: eclipse-minimising sun-synchronous orbits in a mean-Sun
 > rotating frame*, v0.2.6 (2026). https://doi.org/10.5281/zenodo.23382386
 
+## Third-party software and data
+
+The bundled visualizer ships React, three.js and KaTeX (MIT) and NASA Blue Marble Earth imagery via
+three-globe's example textures; the high-fidelity check reads the JPL DE440 ephemeris (public domain)
+through `jplephem`. Licences and notices: [THIRD-PARTY-NOTICES.md](THIRD-PARTY-NOTICES.md).
+
 ## License
 
 MIT.
