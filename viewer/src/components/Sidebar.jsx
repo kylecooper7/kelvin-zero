@@ -120,6 +120,14 @@ function HelpButtonBase({ helpId, onRequestHelp }) {
 }
 
 export function Sidebar({ onOrbitPreview, open, drawer = false, onClose, model, setModel, timeDays = 0, onRequestDeleteOrbit, onRequestHelp }) {
+  // Safari draws its classic scrollbar whenever a mouse is attached; show ours only while the sidebar is scrolling
+  const [scrolling, setScrolling] = useState(false)
+  const scrollTimer = useRef(0)
+  const onSidebarScroll = () => {
+    setScrolling(true)
+    window.clearTimeout(scrollTimer.current)
+    scrollTimer.current = window.setTimeout(() => setScrolling(false), 700)
+  }
   const [orbitsOpen, setOrbitsOpen] = useState(true)
   const [calculateOpen, setCalculateOpen] = useState(true)
   const [togglesOpen, setTogglesOpen] = useState(true)
@@ -238,7 +246,9 @@ export function Sidebar({ onOrbitPreview, open, drawer = false, onClose, model, 
       aria-hidden={!open}
     >
       <div
-        className={`h-full w-[340px] transform overflow-y-auto px-4 py-6 transition-[transform,opacity] duration-200 ease-out [scrollbar-gutter:stable] [scrollbar-width:thin] [scrollbar-color:rgba(255,255,255,0.25)_transparent] [&::-webkit-scrollbar]:w-3 [&::-webkit-scrollbar-track]:bg-transparent [&::-webkit-scrollbar-thumb]:rounded-full [&::-webkit-scrollbar-thumb]:bg-white/20 [&::-webkit-scrollbar-thumb:hover]:bg-white/30 ${
+        onScroll={onSidebarScroll}
+        data-scrolling={scrolling ? 'true' : 'false'}
+        className={`h-full w-[340px] transform overflow-y-auto px-4 py-6 transition-[transform,opacity] duration-200 ease-out [scrollbar-gutter:stable] [scrollbar-width:thin] [scrollbar-color:transparent_transparent] [transition:scrollbar-color_.4s] data-[scrolling=true]:[scrollbar-color:rgba(255,255,255,0.25)_transparent] ${
           open ? 'translate-x-0 opacity-100' : '-translate-x-full opacity-0'
         }`}
       >
